@@ -1,5 +1,6 @@
 const store = {
-	host: 'http://localhost:4567/game',
+	// host: 'http://localhost:4567/game',
+	host: 'http://drawings-alter-humility.herokuapp.com/game',
 	state:{
 		myData:{},
 		myLobby:null,
@@ -40,7 +41,7 @@ const store = {
 			// Vue.set(store.state.myLobby, null);
 			store.state.myLobby = null;
 			// delete store.state.myLobby;
-			console.log(store.state.myLobby);
+			// console.log(store.state.myLobby);
 
 		});
 	},
