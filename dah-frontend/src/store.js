@@ -1,6 +1,6 @@
 const store = {
 	// host: 'http://localhost:4567/game',
-	host: 'http://drawings-alter-humility.herokuapp.com/game',
+	host: 'https://drawings-alter-humility.herokuapp.com/game',
 	state:{
 		myData:{},
 		myLobby:null,
