@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <LobbyVue></LobbyVue>
     <DrawingApp></DrawingApp>
     <!-- <img src="./assets/logo.png">
     <h1>{{ msg }}</h1>
@@ -22,12 +23,14 @@
 
 <script>
   import DrawingApp from './components/DrawingApp.vue'
+  import LobbyVue from './components/LobbyVue.vue'
 export default {
   name: 'app',
   props:{
   },
   components: {
-    DrawingApp 
+    DrawingApp,
+    LobbyVue 
   },
   data () {
     return {

@@ -128,6 +128,13 @@ public class GameManager {
         return false;
     }
     
+    /**
+     * Allow a player to leave the lobby they're currently in.
+     * If the player is the admin, pass control to another player
+     * If there are no players in the lobby then Release the lobby
+     * @param playerSession
+     * @return 
+     */
     public boolean LeaveLobby(Session playerSession){
         String accesor_id = playerSession.id();
         int lobby_id = playerSession.attribute("CURRENT_GAME");

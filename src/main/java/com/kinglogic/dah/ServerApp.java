@@ -5,6 +5,7 @@
  */
 package com.kinglogic.dah;
 
+import spark.Filter;
 import spark.Spark;
 import static spark.Spark.*;
 /**
@@ -23,16 +24,23 @@ public class ServerApp {
             //return JSON
             before("/*", (request, response) -> {
                 response.type("application/json");
+//                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
+                response.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+                response.header("Access-Control-Allow-Origin", "*");
+                response.header("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,");
+                response.header("Access-Control-Allow-Credentials", "true");
                 //set up their session 
                 request.session(true);
             });
-            
+
             configureLobbiesEndpoints();
+            configureCurrentLobbyEndpoints();
             
             
             get("/hello", (request,response) ->{
                 return "{\"hello\": new stuff}";
             });
+            
         });      
     }
     
@@ -51,11 +59,13 @@ public class ServerApp {
                     halt(400);
                 return data;
             });
-            
+           
             /**
              * Check out a new lobby
              */
             post("", (request,response) ->{
+                if(request.session().attribute("CURRENT_GAME") != null)
+                        halt(403, "you already have a game in your session");
                 String data = GameManager.getInstance().CheckoutLobby(request.session());
                 if(data == null)
                     halt(400);
@@ -129,7 +139,7 @@ public class ServerApp {
                 });
                 post("/leave", (request,response) ->{
                     if(GameManager.getInstance().LeaveLobby(request.session())){
-                        response.status(204);
+                        response.status(200);
                         return "{\"message\": \"successfully left\"}";
                     }
                     response.status(403);
@@ -139,6 +149,28 @@ public class ServerApp {
             });
             
                     
+        });
+    }
+    
+    /**
+     * Set all current Game Endpoints, mainly to be used for accessing the sessions game data without knowing the ID
+     */
+    public static void configureCurrentLobbyEndpoints(){
+        path("/current", () -> {
+            //make sure the user is in a Lobby
+            before("", (request, response) -> {
+                if(request.session().attribute("CURRENT_GAME") == null)
+                    halt(403, "{\"message\": \"you're not in a game\"}");
+            });
+            /**
+             * Retrun the data of the game the session is currently in
+             */
+            get("", (request,response) ->{
+                    String data = GameManager.getInstance().getLobby(request.session().attribute("CURRENT_GAME"));
+                    if(data == null)
+                        halt(400);
+                    return data;
+                });
         });
     }
     
