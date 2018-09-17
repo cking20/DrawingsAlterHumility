@@ -5,6 +5,13 @@
  */
 package com.kinglogic.dah;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.HttpServletResponse;
 import spark.Filter;
 import spark.Spark;
 import static spark.Spark.*;
@@ -13,20 +20,32 @@ import static spark.Spark.*;
  * @author chris
  */
 public class ServerApp {
+    static File tempDir;
+    
     public static void main(String[] args){
         staticFileLocation("public");
+        tempDir = new File("temp");
+        tempDir.mkdir();
+        for(File f: tempDir.listFiles()){
+            f.delete();
+        }
+        tempDir.deleteOnExit();
+        Spark.externalStaticFileLocation("temp");
         port(getHerokuAssignedPort());
         configureRoutes();
-    }
+        
+        
+        
+}
     
     public static void configureRoutes(){
         path("/game", () -> {
             //return JSON
             before("/*", (request, response) -> {
                 response.type("application/json");
-//                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
+                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
                 response.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-                response.header("Access-Control-Allow-Origin", "*");
+//                response.header("Access-Control-Allow-Origin", "*");
                 response.header("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,");
                 response.header("Access-Control-Allow-Credentials", "true");
                 //set up their session 
@@ -35,12 +54,12 @@ public class ServerApp {
 
             configureLobbiesEndpoints();
             configureCurrentLobbyEndpoints();
+            configureImagesEndpoints();
             
             
             get("/hello", (request,response) ->{
-                return "{\"hello\": new stuff}";
-            });
-            
+                return "{\"message\": \"hi there\"}";
+            });  
         });      
     }
     
@@ -76,9 +95,9 @@ public class ServerApp {
             //Specific lobby functions
             path("/:lobby_id", () ->{
                 before("/*", (request, response) -> {
-                    System.out.println("api called");
+//                    System.out.println("api called");
                     try{
-                        System.out.println(request.params(":lobby_id"));
+//                        System.out.println(request.params(":lobby_id"));
                         Integer.parseInt(request.params(":lobby_id"));
                     }catch(NumberFormatException exception){
                         halt(406, "invalid lobby id");
@@ -172,6 +191,42 @@ public class ServerApp {
                     return data;
                 });
         });
+    }
+    
+    public static void configureImagesEndpoints(){
+        path("/images", () ->{
+            //testing stuff
+            get("/testimage", (request,response) ->{
+                response.type("image/png");
+                if(tempDir.listFiles().length > 0){
+                    byte[] data = null;
+                    try {
+                        data = Files.readAllBytes(tempDir.listFiles()[0].toPath());
+                    } catch (Exception e) {e.printStackTrace();}
+                    HttpServletResponse raw = response.raw();
+    //                response.header("Content-Disposition", "attachment; filename=image.jpg");
+                    response.type("image/png");
+                    try {
+                        raw.getOutputStream().write(data);
+                        raw.getOutputStream().flush();
+                        raw.getOutputStream().close();
+                    } catch (Exception e) {e.printStackTrace();}
+                    return raw;
+                }
+                return null;
+            });
+
+            post("/testimage", (request,response) ->{
+                Path tempFile = new File(tempDir.getPath()+"/temp.png").toPath();//Files.createTempFile(tempDir.toPath(), "temp", ".png");
+    //            Path tempFile = Files.createTempFile(tempDir.toPath(), "temp", ".png");
+                request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+                try (InputStream input = request.raw().getPart("uploaded_file").getInputStream()) {
+                    Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
+                }
+                return "<h1>You uploaded this image:<h1><img src='" + tempFile.getFileName()+ "'>";
+            });
+        });
+        
     }
     
     static int getHerokuAssignedPort() {

@@ -50,6 +50,7 @@
 </template>
 
 <script>
+	import store from '../store.js'
 export default{
 	name: 'DrawingApp',
 	props:{
@@ -58,6 +59,7 @@ export default{
 	},
 	data: function() {
 		return {
+			dataStore: store.store,
 			showBackGroundSelect: false,
 			canvas: null, 
 			context: null,
@@ -220,11 +222,17 @@ export default{
 		},
 		addToUndos: function(){
 			this.undos.splice(0,0,this.canvas.toDataURL());
-			this.undos = this.undos.slice(0, this.store.store.state.unlocks.maxUndos);
+			var maxUndos = 10;
+			this.undos = this.undos.slice(0, maxUndos);
 		},
 		submit: function(){
-			if(confirm("Did you finish???"))
-				console.log('todo SUBMIT');
+			if(confirm("Did you finish???")){
+				this.dataStore.submitImage(this.canvas.toDataURL(), function(){
+					//callback
+					console.log('SUBMITED');
+				});
+				
+			}
 		}
 	}
 }

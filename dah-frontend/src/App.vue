@@ -1,5 +1,10 @@
 <template>
   <div id="app">
+
+    <h1>Test shared image</h1>
+    <img id="testImage" ref="testImage">
+    <button @click="reloadImage()">Refresh</button>
+
     <LobbyVue></LobbyVue>
     <DrawingApp></DrawingApp>
     <!-- <img src="./assets/logo.png">
@@ -22,6 +27,7 @@
 </template>
 
 <script>
+  import store from './store.js'
   import DrawingApp from './components/DrawingApp.vue'
   import LobbyVue from './components/LobbyVue.vue'
 export default {
@@ -34,7 +40,21 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      datastore: store.store,
+      imgRef: {}
+    }
+  },
+  mounted: function(){
+    this.imgRef = this.$refs['testImage']; 
+  },
+  methods:{
+    reloadImage: function () {
+      // this.imgRef.src = "";
+      // this.imgRef.src = this.datastore.host+'/images/testimage';
+      this.datastore.refreshImage(function(url){
+        document.getElementById("testImage").src = url;
+      });
+      
     }
   }
 }

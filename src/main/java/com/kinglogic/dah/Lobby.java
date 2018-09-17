@@ -13,6 +13,7 @@ import java.util.ArrayList;
  */
 public class Lobby {
     private int id;
+    private String name;
     private boolean isReleased;
     private String adminUuid;
     private String password;
@@ -25,6 +26,7 @@ public class Lobby {
 
     public Lobby(int id) {
         this.id = id;
+        name = id+"";
         password = null;
         isReleased = true;
         password = null;
@@ -246,6 +248,20 @@ public class Lobby {
      */
     public int getId() {
         return id;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
     }
      
 }
