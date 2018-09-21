@@ -1,8 +1,32 @@
 <template>
   <div id="app">
 
+    <div class="fb-login-button" data-width="320" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
+    <!-- <button @click="fbapi.TestLogin()">FB Login</button> -->
+    <button @click="sapi.TestFBGet()">Social Test</button>
     <h1>Test shared image</h1>
     <img id="testImage" ref="testImage">
+
+    <div class="fb-like" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button" data-action="like" data-size="large" data-show-faces="false" data-share="false">
+    </div>
+
+    <div class="fb-share-button" 
+      data-href="https://drawings-alter-humility.herokuapp.com/" 
+      data-layout="button" data-size="large" data-mobile-iframe="true">
+      <a target="_blank" 
+      href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdrawings-alter-humility.herokuapp.com%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share
+      </a>
+    </div>
+
+    <div>
+      <a class="twitter-share-button"
+      href="https://twitter.com/intent/tweet?text=
+      Hello%20world"
+      data-size="large">
+      Tweet
+      </a>
+    </div>
+
     <button @click="reloadImage()">Refresh</button>
 
     <LobbyVue></LobbyVue>
@@ -27,9 +51,11 @@
 </template>
 
 <script>
+  import socialConnector from './socialConnector.js'
   import store from './store.js'
   import DrawingApp from './components/DrawingApp.vue'
   import LobbyVue from './components/LobbyVue.vue'
+
 export default {
   name: 'app',
   props:{
@@ -40,6 +66,7 @@ export default {
   },
   data () {
     return {
+      sapi : socialConnector.socialConnector,
       datastore: store.store,
       imgRef: {}
     }
