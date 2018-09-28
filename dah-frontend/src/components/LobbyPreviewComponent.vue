@@ -5,14 +5,8 @@
 			<p>Admin: {{this.lobby.adminUuid}}</p>
 			<p>In Progress: {{this.lobby.isInProgress}}</p>
 			<p>Players: {{this.numPlayers}}/{{this.lobby.maxPlayers}}</p>
-		</div>
-		<ul>
-			<li>
-				<button v-if="this.numPlayers < this.lobby.maxPlayers" :click="join()">Join</button>
-			</li>
-		</ul>
-		
-		
+			<button v-if="this.numPlayers < this.lobby.maxPlayers" v-on:click="join()">Join</button>
+		</div>	
 	</div>
 </template>
 
@@ -37,6 +31,7 @@ export default{
 	},
 	methods:{
 		join: function(){
+			console.log("joining Lobby");
 			store.store.joinLobby(this.lobby.id);
 		}
 	}

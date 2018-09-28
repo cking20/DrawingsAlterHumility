@@ -6,6 +6,7 @@
 package com.kinglogic.dah;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -22,6 +23,7 @@ public class Lobby {
     private int maxRounds;
     private int maxPlayers;
     private final ArrayList<String> players;
+    private HashMap<String, String> playerNames;
     
 
     public Lobby(int id) {
@@ -35,6 +37,7 @@ public class Lobby {
         maxRounds = 10;
         maxPlayers = 10;
         players = new ArrayList<>();
+        playerNames = new HashMap<>();
     }
 
     /**
@@ -42,11 +45,12 @@ public class Lobby {
      * @param newAdmin
      * @return 
      */
-    public boolean Checkout(String newAdmin){
+    public boolean Checkout(String newAdminID, String newAdminName){
         if(Reset()){
             this.isReleased = false;
-            this.adminUuid = newAdmin;
+            this.adminUuid = newAdminID;
             this.players.add(this.adminUuid);
+            this.playerNames.put(newAdminID, newAdminName);
             return true;
         }
         return false;
@@ -90,6 +94,7 @@ public class Lobby {
             maxRounds = 10;
             maxPlayers = 10;
             players.clear();
+            playerNames.clear();
             return true;
         }
         return false;
@@ -101,12 +106,13 @@ public class Lobby {
      * @param password
      * @return 
      */
-    public boolean JoinPlayer(String playerID, String password){
+    public boolean JoinPlayer(String playerID, String playerName, String password){
         if(!isReleased && !isInProgress){//the lobby is in the waiting for players state
             if(this.password == null//the lobby is public
                     || (this.password != null && this.password.compareTo(password) == 0))//the lobby is private and the player knows the password
                 if(!players.contains(playerID)){//the player isnt already in the game
                     players.add(playerID);
+                    playerNames.put(playerID, playerName);
                     return true;
                 }
         }
@@ -121,10 +127,22 @@ public class Lobby {
     public boolean RemovePlayer(String player){
         if(players.contains(player)){
             players.remove(player);
+            playerNames.remove(player);
             return true;
         }
         return false;
     }
+    
+    /**
+     * Updates the Lobby state to represent a player name change
+     * @param playerID the session ID of a player in the lobby
+     * @param newName that player's new name
+     */
+    public void updatePlayerName(String playerID, String newName){
+//        if(playerNames.containsKey(playerID)){
+            playerNames.replace(playerID, newName);
+//        }
+    } 
     
     public boolean isFull(){
         return players.size() >= maxPlayers;

@@ -89,7 +89,7 @@ public class GameManager {
         }
         if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
             if(lobbies[lobby_id].isIsReleased())//the lobby is released
-                if(lobbies[lobby_id].Checkout(admin.id())){//the lobby gets successfully checked out
+                if(lobbies[lobby_id].Checkout(admin.id(), admin.attribute("NAME"))){//the lobby gets successfully checked out
                     admin.attribute("CURRENT_GAME", lobby_id);
                     return  gson.toJson(lobbies[lobby_id], Lobby.class);
                 }
@@ -119,7 +119,7 @@ public class GameManager {
     public boolean JoinLobby(Session playerSession, int lobby_id, String password){
         if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
             if(!lobbies[lobby_id].isIsReleased()){//the lobby is released
-                if(lobbies[lobby_id].JoinPlayer(playerSession.id(),password)){//the lobby gets successfully checked out
+                if(lobbies[lobby_id].JoinPlayer(playerSession.id(),playerSession.attribute("NAME"), password)){//the lobby gets successfully checked out
                     playerSession.attribute("CURRENT_GAME", lobby_id);
                     return true;
                 }
@@ -159,5 +159,12 @@ public class GameManager {
         return false;
     }
     
-    
+    public void UpdatePlayerName(Session playerSession){
+        if(playerSession.attribute("CURRENT_GAME") != null && playerSession.attribute("NAME") != null){
+            int lobby_id = playerSession.attribute("CURRENT_GAME");
+            if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
+                lobbies[lobby_id].updatePlayerName(playerSession.id(), playerSession.attribute("NAME"));
+            }
+        }
+    }
 }

@@ -29,7 +29,7 @@ const store = {
 		var file = new Blob([new Uint8Array(array)], {type: 'image/png'});
 		var formdata = new FormData();
 		formdata.append("uploaded_file", file);
-		postImage(this.host + '/images/testimage', formdata, function(xhttp){
+		post(this.host + '/images/testimage', formdata, function(xhttp){
 			callbackFunction();
 		});
 	},
@@ -46,14 +46,22 @@ const store = {
 		xhttp.send();
 	},
 	refreshMyLobbyData: function(){
-		hit('GET', this.host + '/current', function(xhttp){
+		hit('GET', this.host + '/me/lobby', function(xhttp){
 			store.state.myLobby = JSON.parse(xhttp.responseText);
+		}, function(xhttp){
+			store.state.myLobby = null;
 		});
 	},
 
 	getAvailableLobbies: function(){
 		hit('GET', this.host + '/lobbies', function(xhttp){
 			store.state.knownLobbies = JSON.parse(xhttp.responseText);
+		});
+	},
+	changeName: function(name){
+		var nameJSON = '{"name": ' + name + '}';
+		post(this.host + '/me/name', nameJSON, function(xhttp){
+			store.state.myData = JSON.parse(xhttp.responseText);
 		});
 	},
 	joinLobby: function(lobbyID){
@@ -81,12 +89,26 @@ const store = {
 	}
 }
 
-function hit(method, path, callbackFunction){
+function hit(method, path, callbackFunctionSuccess, callbackFunctionFailure){
 	var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 		    if (this.readyState == 4 && this.status == 200) {
 		    	//could be a callback function passed as a parameter?
-		    	callbackFunction(this);
+		    	callbackFunctionSuccess(this);
+			}else{
+				callbackFunctionFailure(this);
+			}
+		};
+		xhttp.withCredentials = true;
+		xhttp.open(method, path, true);
+		xhttp.send();
+}
+function hit(method, path, callbackFunctionSuccess){
+	var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+		    if (this.readyState == 4 && this.status == 200) {
+		    	//could be a callback function passed as a parameter?
+		    	callbackFunctionSuccess(this);
 			}
 		};
 		xhttp.withCredentials = true;
@@ -109,7 +131,7 @@ function hitImage(method, path, callbackFunction){
 }
 
 //This should change to auto detect the game state and hit the correct endpoint
-function postImage(path, data, callbackFunction){
+function post(path, data, callbackFunction){
 	var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 		    if (this.readyState == 4 && this.status == 200) {
@@ -118,8 +140,10 @@ function postImage(path, data, callbackFunction){
 			}
 		};
 		// uploaded_file
+
 		xhttp.withCredentials = true;
 		xhttp.open('POST', path, true);
+		// xhttp.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
 		xhttp.send(data);
 
 }

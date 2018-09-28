@@ -5,14 +5,19 @@
  */
 package com.kinglogic.dah;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import static com.kinglogic.dah.ResourceManager.tempDir;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletResponse;
 import spark.Filter;
+import spark.Session;
 import spark.Spark;
 import static spark.Spark.*;
 /**
@@ -20,16 +25,12 @@ import static spark.Spark.*;
  * @author chris
  */
 public class ServerApp {
-    static File tempDir;
+    
     
     public static void main(String[] args){
         staticFileLocation("public");
-        tempDir = new File("temp");
-        tempDir.mkdir();
-        for(File f: tempDir.listFiles()){
-            f.delete();
-        }
-        tempDir.deleteOnExit();
+        GameManager.getInstance();
+        ResourceManager.getInstance();
         Spark.externalStaticFileLocation("temp");
         port(getHerokuAssignedPort());
         configureRoutes();
@@ -43,17 +44,18 @@ public class ServerApp {
             //return JSON
             before("/*", (request, response) -> {
                 response.type("application/json");
-//                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
+                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
                 response.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-                response.header("Access-Control-Allow-Origin", "*");
+//                response.header("Access-Control-Allow-Origin", "*");
                 response.header("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,");
                 response.header("Access-Control-Allow-Credentials", "true");
                 //set up their session 
                 request.session(true);
             });
 
+            configurePlayerStatusEndpoints();
             configureLobbiesEndpoints();
-            configureCurrentLobbyEndpoints();
+//            configureCurrentLobbyEndpoints();
             configureImagesEndpoints();
             
             
@@ -193,6 +195,9 @@ public class ServerApp {
         });
     }
     
+    /**
+     * Set all routes for image manipulation
+     */
     public static void configureImagesEndpoints(){
         path("/images", () ->{
             //testing stuff
@@ -229,11 +234,104 @@ public class ServerApp {
         
     }
     
+    /**
+     * Set all routes for checking a players status
+     */
+    public static void configurePlayerStatusEndpoints(){
+        path("/me", () ->{ 
+            /**
+             * Returns high level information about the player's state
+             */
+            get("", (request,response) ->{
+                return JSONifyPlayerStatus(request.session());                
+            });
+            
+            /**
+             * Sets the name of the player
+             */
+            post("/name", (request,response) ->{
+                Gson gson = new Gson();
+                HashMap<String,Object> map = new HashMap();
+                
+                System.out.println(request.body());
+                System.out.println(request.contentType());
+                
+                if(request.body() != null){
+                    try{
+                        map = (HashMap<String,Object>) gson.fromJson(request.body(), map.getClass());
+                        if(map != null && map.containsKey("name")){
+                            String name = (String) map.get("name");
+                            request.session(true).attribute("NAME", name);
+                            if(request.session().attribute("CURRENT_GAME") != null){
+                                System.out.println("calling update");
+                                GameManager.getInstance().UpdatePlayerName(request.session());
+                            }
+                        }
+                    }catch(JsonSyntaxException js){
+                        halt(400, js.getMessage());
+                    
+                    }
+                }
+                
+                return JSONifyPlayerStatus(request.session());
+                
+            });
+            
+            /**
+             * Return the player's lobby data
+             * @EQ  1: the player has a lobby
+             *      2: the player is not in a lobby
+             */
+            before("/lobby", (request, response) -> {
+                if(request.session().attribute("CURRENT_GAME") == null)
+                    halt(403, "{\"message\": \"you're not in a game\"}");
+            });
+            /**
+             * Retrun the data of the game the session is currently in
+             */
+            get("/lobby", (request,response) ->{
+                    String data = GameManager.getInstance().getLobby(request.session().attribute("CURRENT_GAME"));
+                    if(data == null)
+                        halt(400);
+                    return data;
+                });
+                
+            
+            /**
+             * Return the player's lobbies game data
+             */
+            get("/game", (request,response) ->{
+                return null;
+            });
+            
+        });
+    }
+    
+    /**
+     * Gets the port that the server should be running on
+     * @return 
+     */
     static int getHerokuAssignedPort() {
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (processBuilder.environment().get("PORT") != null) {
             return Integer.parseInt(processBuilder.environment().get("PORT"));
         }
         return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
+    }
+    
+    private static String JSONifyPlayerStatus(Session playerSession){
+        String name;
+        if(playerSession.attribute("NAME") != null)
+            name = "\""+playerSession.attribute("NAME")+"\"";
+        else
+            name = null;
+        
+        String data = "{"
+                + "\"id\": \""+playerSession.id()+"\","
+                + "\"name\": "+name+","
+                + "\"signed_in\": false,"//todo 
+                + "\"current_game\": "+playerSession.attribute("CURRENT_GAME")
+                +"}";
+        return data;
     }
 }

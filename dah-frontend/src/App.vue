@@ -1,9 +1,10 @@
 <template>
   <div id="app">
 
-    <div class="fb-login-button" data-width="320" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
-    <!-- <button @click="fbapi.TestLogin()">FB Login</button> -->
-    <button @click="sapi.TestFBGet()">Social Test</button>
+    <input v-model="name" placeholder="Set Name">
+    <p>Name is: {{ name }}</p>
+    <button @click="submitNewName()">Set</button>
+
     <h1>Test shared image</h1>
     <img id="testImage" ref="testImage">
 
@@ -27,7 +28,7 @@
       </a>
     </div>
 
-    <button @click="reloadImage()">Refresh</button>
+    <!-- <button @click="reloadImage()">Refresh</button> -->
 
     <LobbyVue></LobbyVue>
     <DrawingApp></DrawingApp>
@@ -68,20 +69,33 @@ export default {
     return {
       sapi : socialConnector.socialConnector,
       datastore: store.store,
-      imgRef: {}
+      imgRef: {},
+      name: '',
+      refresher: ''
     }
   },
   mounted: function(){
     this.imgRef = this.$refs['testImage']; 
   },
+  created: function(){
+    this.refresher = setInterval(this.refreshState,5000);
+  },
   methods:{
+    refreshState: function(){
+      //todo: only update the part that need updateing TBD when Vue Swither is built
+      this.reloadImage();
+      this.datastore.refreshMyLobbyData();
+      this.datastore.getAvailableLobbies();
+    },
     reloadImage: function () {
       // this.imgRef.src = "";
       // this.imgRef.src = this.datastore.host+'/images/testimage';
       this.datastore.refreshImage(function(url){
         document.getElementById("testImage").src = url;
-      });
-      
+      }); 
+    },
+    submitNewName: function(){
+      this.datastore.changeName(this.name);
     }
   }
 }
