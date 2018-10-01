@@ -159,6 +159,10 @@ public class GameManager {
         return false;
     }
     
+    /**
+     * Update the session's name in the lobby data
+     * @param playerSession 
+     */
     public void UpdatePlayerName(Session playerSession){
         if(playerSession.attribute("CURRENT_GAME") != null && playerSession.attribute("NAME") != null){
             int lobby_id = playerSession.attribute("CURRENT_GAME");
@@ -167,4 +171,32 @@ public class GameManager {
             }
         }
     }
+    
+    /**
+     * Precondition: Session attribute "CURRENT_GAME" should != null
+     * Updates the lobbies state if the session is the admin
+     * @param adminSession
+     * @param name
+     * @param maxRounds
+     * @param maxPlayers
+     * @param password 
+     */
+    public String UpdateLobbySettings(Session admin, String name, int maxRounds, int maxPlayers, String password){
+        String accesor_id = admin.id();
+        int lobby_id = admin.attribute("CURRENT_GAME");
+        if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
+            if(accesor_id.compareTo(lobbies[lobby_id].getAdminUuid()) == 0){//if its the admin releasing it
+                lobbies[lobby_id].setName(name);
+                lobbies[lobby_id].setMaxPlayers(maxPlayers);
+                lobbies[lobby_id].setMaxRounds(maxRounds);
+                if(password.compareTo("") == 0)
+                    lobbies[lobby_id].setPassword(null);
+                else
+                    lobbies[lobby_id].setPassword(password);
+            }
+        }
+        return gson.toJson(lobbies[lobby_id], Lobby.class);
+        
+    }
+
 }

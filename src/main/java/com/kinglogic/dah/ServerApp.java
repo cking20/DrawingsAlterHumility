@@ -44,11 +44,11 @@ public class ServerApp {
             //return JSON
             before("/*", (request, response) -> {
                 response.type("application/json");
-                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
-                response.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-//                response.header("Access-Control-Allow-Origin", "*");
-                response.header("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,");
-                response.header("Access-Control-Allow-Credentials", "true");
+//                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
+//                response.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+////                response.header("Access-Control-Allow-Origin", "*");
+//                response.header("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,");
+//                response.header("Access-Control-Allow-Credentials", "true");
                 //set up their session 
                 request.session(true);
             });
@@ -126,8 +126,31 @@ public class ServerApp {
                 /**
                  * Update the settings of this lobby
                  */
-                put("", (request,response) ->{
-                    return "{\"message\": not yet implemented}";
+                post("", (request,response) ->{
+                    Gson gson = new Gson();
+                    HashMap<String,Object> map = new HashMap();
+                    if(request.body() != null){
+                        try{
+                            Lobby updated = (Lobby) gson.fromJson(request.body(), Lobby.class);
+                            if(updated != null){
+                                if(request.session().attribute("CURRENT_GAME") != null){    
+                                    return GameManager.getInstance().UpdateLobbySettings(
+                                            request.session(),
+                                            updated.getName(),
+                                            updated.getMaxRounds(), 
+                                            updated.getMaxPlayers(), 
+                                            updated.getPassword());
+                                } else halt();
+                                
+                            } else halt();
+                        }catch(JsonSyntaxException js){
+                            System.err.println(js.getMessage());
+                            halt(400, js.getMessage());
+                        }
+                    }
+                    halt();
+                    return "";
+                   
                 });
                 
                 /**
@@ -263,7 +286,6 @@ public class ServerApp {
                             String name = (String) map.get("name");
                             request.session(true).attribute("NAME", name);
                             if(request.session().attribute("CURRENT_GAME") != null){
-                                System.out.println("calling update");
                                 GameManager.getInstance().UpdatePlayerName(request.session());
                             }
                         }

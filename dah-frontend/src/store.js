@@ -2,6 +2,7 @@ const store = {
 	// host: 'http://localhost:4567/game',
 	host: 'https://drawings-alter-humility.herokuapp.com/game',
 	state:{
+		currentVue: 'BrowserVue',
 		tempImageData:null,
 		myData:{},
 		myLobby:null,
@@ -51,12 +52,22 @@ const store = {
 		}, function(xhttp){
 			store.state.myLobby = null;
 		});
+		vueStateTransition();
 	},
 
 	getAvailableLobbies: function(){
 		hit('GET', this.host + '/lobbies', function(xhttp){
 			store.state.knownLobbies = JSON.parse(xhttp.responseText);
 		});
+		vueStateTransition();
+	},
+	getPlayerData: function(){
+		hit('GET', this.host + '/me', function(xhttp){
+			store.state.myData = JSON.parse(xhttp.responseText);
+		}, function(xhttp){
+			store.state.myData = null;
+		});
+		vueStateTransition();
 	},
 	changeName: function(name){
 		var nameJSON = '{"name": ' + name + '}';
@@ -68,6 +79,7 @@ const store = {
 		hit('POST', this.host + '/lobbies/'+ lobbyID + '/join', function(xhttp){
 			store.state.myLobby = JSON.parse(xhttp.responseText);
 		});
+		vueStateTransition();
 	},
 	leaveLobby: function(){
 		hit('POST', this.host + '/lobbies/'+ store.state.myLobby.id + '/leave', function(xhttp){
@@ -78,14 +90,32 @@ const store = {
 			// console.log(store.state.myLobby);
 
 		});
+		vueStateTransition();
+	},
+	updateLobbySettings: function(lobbySettings){
+		console.log(JSON.stringify(lobbySettings));
+		post(this.host + '/lobbies/'+lobbySettings.id, JSON.stringify(lobbySettings), function(xhttp){
+			store.state.myLobby = JSON.parse(xhttp.responseText);
+		});
 	},
 	createNewLobby: function(){
 		hit('POST', this.host + '/lobbies', function(xhttp){
 			store.state.myLobby = JSON.parse(xhttp.responseText);
 		});
+		vueStateTransition();
 	},
 	getMyLobbyData: function(){
 		return store.state.myLobby;
+	}
+}
+
+function vueStateTransition(){
+	if(store.state.myLobby == null){
+		store.state.currentVue = 'BrowserVue';
+	}
+	else{
+		//todo: check the gamedata and see if it's in 
+		store.state.currentVue = 'LobbyVue';
 	}
 }
 
@@ -103,6 +133,7 @@ function hit(method, path, callbackFunctionSuccess, callbackFunctionFailure){
 		xhttp.open(method, path, true);
 		xhttp.send();
 }
+
 function hit(method, path, callbackFunctionSuccess){
 	var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
@@ -115,6 +146,7 @@ function hit(method, path, callbackFunctionSuccess){
 		xhttp.open(method, path, true);
 		xhttp.send();
 }
+
 function hitImage(method, path, callbackFunction){
 	var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {

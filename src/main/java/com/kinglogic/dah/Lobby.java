@@ -31,7 +31,6 @@ public class Lobby {
         name = id+"";
         password = null;
         isReleased = true;
-        password = null;
         isInProgress = false;
         roundNumber = -1;
         maxRounds = 10;
@@ -88,7 +87,7 @@ public class Lobby {
         if(this.isIsReleased()){
             adminUuid = null;
             isReleased = true;
-            password = null;
+            setPassword(null);
             isInProgress = false;
             roundNumber = -1;
             maxRounds = 10;
@@ -108,8 +107,8 @@ public class Lobby {
      */
     public boolean JoinPlayer(String playerID, String playerName, String password){
         if(!isReleased && !isInProgress){//the lobby is in the waiting for players state
-            if(this.password == null//the lobby is public
-                    || (this.password != null && this.password.compareTo(password) == 0))//the lobby is private and the player knows the password
+            if(this.getPassword() == null//the lobby is public
+                    || (this.getPassword() != null && this.getPassword().compareTo(password) == 0))//the lobby is private and the player knows the password
                 if(!players.contains(playerID)){//the player isnt already in the game
                     players.add(playerID);
                     playerNames.put(playerID, playerName);
@@ -180,14 +179,14 @@ public class Lobby {
      * @return the isPrivate
      */
     public boolean isIsPrivate() {
-        return password != null;
+        return getPassword() != null;
     }
 
     /**
      * @param password the isPrivate to set
      */
     public void setIsPrivate(String password) {
-        this.password = password;
+        this.setPassword(password);
     }
 
     /**
@@ -280,6 +279,20 @@ public class Lobby {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
      
 }

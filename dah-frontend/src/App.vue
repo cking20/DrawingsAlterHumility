@@ -5,6 +5,11 @@
     <p>Name is: {{ name }}</p>
     <button @click="submitNewName()">Set</button>
 
+    <component v-bind:is="datastore.state.currentVue"> </component>
+    
+
+    
+
     <h1>Test shared image</h1>
     <img id="testImage" ref="testImage">
 
@@ -27,33 +32,13 @@
       Tweet
       </a>
     </div>
-
-    <!-- <button @click="reloadImage()">Refresh</button> -->
-
-    <LobbyVue></LobbyVue>
-    <DrawingApp></DrawingApp>
-    <!-- <img src="./assets/logo.png">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul> -->
   </div>
 </template>
 
 <script>
   import socialConnector from './socialConnector.js'
   import store from './store.js'
+  import BrowserVue from './components/BrowserVue.vue'
   import DrawingApp from './components/DrawingApp.vue'
   import LobbyVue from './components/LobbyVue.vue'
 
@@ -63,12 +48,14 @@ export default {
   },
   components: {
     DrawingApp,
-    LobbyVue 
+    LobbyVue,
+    BrowserVue 
   },
-  data () {
+  data: function() {
     return {
       sapi : socialConnector.socialConnector,
       datastore: store.store,
+      currentVue: 'BrowserVue',
       imgRef: {},
       name: '',
       refresher: ''
@@ -84,8 +71,8 @@ export default {
     refreshState: function(){
       //todo: only update the part that need updateing TBD when Vue Swither is built
       this.reloadImage();
-      this.datastore.refreshMyLobbyData();
-      this.datastore.getAvailableLobbies();
+      // this.datastore.refreshMyLobbyData();
+      // this.datastore.getAvailableLobbies();
     },
     reloadImage: function () {
       // this.imgRef.src = "";
