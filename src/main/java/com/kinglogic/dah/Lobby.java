@@ -23,7 +23,7 @@ public class Lobby {
     private int maxRounds;
     private int maxPlayers;
     private final ArrayList<String> players;
-    private HashMap<String, String> playerNames;
+    private final HashMap<String, Player> playerData;
     
 
     public Lobby(int id) {
@@ -36,12 +36,14 @@ public class Lobby {
         maxRounds = 10;
         maxPlayers = 10;
         players = new ArrayList<>();
-        playerNames = new HashMap<>();
+        playerData = new HashMap<>();
+        
     }
 
     /**
-     * Resets the lobby. Assigns newAdmin as the admin of this lobby
-     * @param newAdmin
+     * Assigns the lobby as in use with the newAdminID as the admin
+     * @param newAdminID
+     * @param newAdminName
      * @return 
      */
     public boolean Checkout(String newAdminID, String newAdminName){
@@ -49,7 +51,9 @@ public class Lobby {
             this.isReleased = false;
             this.adminUuid = newAdminID;
             this.players.add(this.adminUuid);
-            this.playerNames.put(newAdminID, newAdminName);
+            Player admin = new Player();
+            admin.name = newAdminName;
+            this.playerData.put(newAdminID, admin);
             return true;
         }
         return false;
@@ -93,7 +97,7 @@ public class Lobby {
             maxRounds = 10;
             maxPlayers = 10;
             players.clear();
-            playerNames.clear();
+            playerData.clear();
             return true;
         }
         return false;
@@ -111,7 +115,10 @@ public class Lobby {
                     || (this.getPassword() != null && this.getPassword().compareTo(password) == 0))//the lobby is private and the player knows the password
                 if(!players.contains(playerID)){//the player isnt already in the game
                     players.add(playerID);
-                    playerNames.put(playerID, playerName);
+//                    playerNames.put(playerID, playerName);
+                    Player player = new Player();
+                    player.name = playerName;
+                    this.playerData.put(playerID, player);
                     return true;
                 }
         }
@@ -126,7 +133,7 @@ public class Lobby {
     public boolean RemovePlayer(String player){
         if(players.contains(player)){
             players.remove(player);
-            playerNames.remove(player);
+            playerData.remove(player);
             return true;
         }
         return false;
@@ -138,10 +145,33 @@ public class Lobby {
      * @param newName that player's new name
      */
     public void updatePlayerName(String playerID, String newName){
-//        if(playerNames.containsKey(playerID)){
-            playerNames.replace(playerID, newName);
-//        }
+            Player player = (Player)playerData.get(playerID);
+            if(player != null){
+                player.name = newName;
+            }
     } 
+    
+    /**
+     * 
+     * @return the new round number 
+     */
+    public int AdvanceRound(){
+        if(roundNumber < 0){//set up the game for playing
+            roundNumber = 0;
+            isInProgress = true;
+            for (String playerID: players) {
+                Player p = playerData.get(playerID);
+                p.currentBooklet = new Booklet(p.name, maxRounds);
+            }
+        }else if(roundNumber < maxRounds){//in play state
+            roundNumber++;
+            //TODO swap booklets
+        }else{//in the review state
+            isInProgress = false;
+            
+        }
+        return roundNumber;
+    }
     
     public boolean isFull(){
         return players.size() >= maxPlayers;

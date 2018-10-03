@@ -116,6 +116,15 @@ public class GameManager {
         return null;
     }
 
+    /**
+     * Attempt to add the session to the game. Cant do that if the session already
+     *      has a game, nor if the lobby is not released, nor if they do not have
+     *      the correct password.
+     * @param playerSession
+     * @param lobby_id
+     * @param password
+     * @return 
+     */
     public boolean JoinLobby(Session playerSession, int lobby_id, String password){
         if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
             if(!lobbies[lobby_id].isIsReleased()){//the lobby is released
@@ -195,8 +204,23 @@ public class GameManager {
                     lobbies[lobby_id].setPassword(password);
             }
         }
-        return gson.toJson(lobbies[lobby_id], Lobby.class);
-        
+        return gson.toJson(lobbies[lobby_id], Lobby.class);  
+    }
+    
+    /**
+     * Attempt to begin the game
+     * @param admin the player trying to begin the game
+     * @return the state of the lobby
+     */
+    public String StartGame(Session admin){
+        String accesor_id = admin.id();
+        int lobby_id = admin.attribute("CURRENT_GAME");
+        if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
+            if(accesor_id.compareTo(lobbies[lobby_id].getAdminUuid()) == 0){//if its the admin stating it
+                lobbies[lobby_id].AdvanceRound();
+            }
+        }
+        return gson.toJson(lobbies[lobby_id], Lobby.class);  
     }
 
 }

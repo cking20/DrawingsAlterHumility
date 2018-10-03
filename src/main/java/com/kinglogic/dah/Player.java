@@ -6,9 +6,12 @@
 package com.kinglogic.dah;
 
 /**
- *
+ *  Helper Class for Lobby
  * @author chris
  */
-public class Game {
+public class Player {
+    public String name;
+    public Booklet currentBooklet;
+    public int votes = 0;
     
 }

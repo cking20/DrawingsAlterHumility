@@ -1,5 +1,5 @@
 <template>
-	<div class = drawing-app>
+	<div class = draw-vue>
 		<H1>Draw: Something</H1>
 			<div>
 				<canvas class="drawing-area" ref="theCanvas" width="640px" height="600px"  
@@ -52,7 +52,7 @@
 <script>
 	import store from '../store.js'
 export default{
-	name: 'DrawingApp',
+	name: 'DrawVue',
 	props:{
 	},
 	components:{

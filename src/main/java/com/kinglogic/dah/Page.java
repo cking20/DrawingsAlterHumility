@@ -13,11 +13,27 @@ import java.util.UUID;
  * @author chris
  */
 public class Page {
-    private UUID id;
-    private String creator;
-    private String text;
-    private String imagePath;
+    private static long idCounter = 0;
+    private final long id;
+    private final String creator;
+    private final boolean isImage;
+    private final String content;
     private ArrayList<String> votes;
+    
+    public static Page BuildDrawing(String creator, String drawingPath){
+        return new Page(creator, true, drawingPath);
+    }
+    
+    public static Page BuildGuess(String creator, String guess){
+        return new Page(creator, false, guess);
+    }
+    
+    private Page(String creator, boolean isDrawing, String content){
+        this.isImage = isDrawing;
+        this.creator = creator;
+        id = idCounter++;
+        this.content = content;
+    }
     
     /**
      * Vote on the current page. Can only be done iff that session has 
@@ -36,15 +52,8 @@ public class Page {
     /**
      * @return the id
      */
-    public UUID getId() {
+    public long getId() {
         return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     /**
@@ -52,41 +61,6 @@ public class Page {
      */
     public String getCreator() {
         return creator;
-    }
-
-    /**
-     * @param creator the creator to set
-     */
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    /**
-     * @return the text
-     */
-    public String getText() {
-        return text;
-    }
-
-    /**
-     * @param text the text to set
-     */
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    /**
-     * @return the imagePath
-     */
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    /**
-     * @param imagePath the imagePath to set
-     */
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
 
     /**
@@ -101,5 +75,19 @@ public class Page {
      */
     public void setVotes(ArrayList<String> votes) {
         this.votes = votes;
+    }
+
+    /**
+     * @return the isImage
+     */
+    public boolean isIsImage() {
+        return isImage;
+    }
+
+    /**
+     * @return the content
+     */
+    public String getContent() {
+        return content;
     }
 }

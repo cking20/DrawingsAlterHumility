@@ -45,10 +45,11 @@ public class ServerApp {
             before("/*", (request, response) -> {
                 response.type("application/json");
 //                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
-//                response.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-////                response.header("Access-Control-Allow-Origin", "*");
-//                response.header("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,");
-//                response.header("Access-Control-Allow-Credentials", "true");
+                response.header("Access-Control-Allow-Origin", "http://drawings-alter-humility.herokuapp.com");
+                
+                response.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+                response.header("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,");
+                response.header("Access-Control-Allow-Credentials", "true");
                 //set up their session 
                 request.session(true);
             });
@@ -171,7 +172,14 @@ public class ServerApp {
                         return GameManager.getInstance().getLobby(Integer.parseInt(request.params(":lobby_id")));
                     }
                     response.status(403);
-                    return "{\"message\": \"nope, stars. can't join\"}";
+                    return "{\"message\": \"nope, stars. can't do it\"}";
+                });
+                
+                /**
+                 * Start the game, must be admin
+                 */
+                post("/begin", (request,response) ->{
+                    return GameManager.getInstance().StartGame(request.session());
                 });
                 
                 /**

@@ -106,6 +106,12 @@ const store = {
 	},
 	getMyLobbyData: function(){
 		return store.state.myLobby;
+	},
+	beginGame: function(){
+		hit('POST', this.host + '/lobbies/'+store.state.myLobby.id+'/begin', function(xhttp){
+			// store.state.myLobby = JSON.parse(xhttp.responseText);
+		});
+		vueStateTransition();
 	}
 }
 

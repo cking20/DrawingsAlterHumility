@@ -4,13 +4,14 @@
     <p>Password<br><input v-model="tempLobbyDataCopy.password"></p>
     
     <p>Round limit: {{tempLobbyDataCopy.maxRounds}} <br>
-      <input type="range" v-model.number="tempLobbyDataCopy.maxRounds" min=2 max=20>
+      <input type="range" v-model.number="tempLobbyDataCopy.maxRounds" min=2 max=20 step=2>
     </p>
     <p>Player limit: {{tempLobbyDataCopy.maxPlayers}} <br>
       <input type="range" v-model.number="tempLobbyDataCopy.maxPlayers" min=4 max=12>
     </p>
 
     <button v-on:click="updateSettings()">Update</button>
+    <button v-on:click="start()">START</button>
     
 
 
@@ -42,6 +43,9 @@ export default {
     updateSettings: function(){
       this.datastore.updateLobbySettings(this.tempLobbyDataCopy);
       //todo
+    },
+    start: function(){
+      this.datastore.beginGame();
     }
   }
 }

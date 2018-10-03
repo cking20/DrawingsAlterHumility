@@ -39,7 +39,7 @@
   import socialConnector from './socialConnector.js'
   import store from './store.js'
   import BrowserVue from './components/BrowserVue.vue'
-  import DrawingApp from './components/DrawingApp.vue'
+  import DrawVue from './components/Draw.vue'
   import LobbyVue from './components/LobbyVue.vue'
 
 export default {
@@ -47,7 +47,7 @@ export default {
   props:{
   },
   components: {
-    DrawingApp,
+    DrawVue,
     LobbyVue,
     BrowserVue 
   },

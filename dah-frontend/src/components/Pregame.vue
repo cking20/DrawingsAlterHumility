@@ -1,16 +1,8 @@
 <template>
-	<div class = lobby-vue>
-
-		<H1>My Lobby Data</H1>
-		<p>{{JSON.stringify(datastore.getMyLobbyData())}}</p>
-		<!-- <button v-on:click="datastore.refreshMyLobbyData()">Refresh My Lobby</button> -->
-		<!-- <button v-on:click="datastore.joinLobby(0)">Join Lobby</button> -->
-		<button v-on:click="datastore.leaveLobby()">Leave Lobby</button>
-
-		<div>
-			<Pregame v-if="datastore.state.myLobby.roundNumber == -1"></Pregame>
-			<Play v-else-if="datastore.state.myLobby.roundNumber < datastore.state.myLobby.maxRounds"></Play>
-			<Review v-else></Review>
+	<div class = pregame-vue>
+		<div v-if="isAdmin()">
+			<H2>Admin Panel Vue</H2>
+			<AdminPanel></AdminPanel>
 		</div>
 
 		
@@ -21,17 +13,13 @@
 
 <script>
 import store from '../store.js'
-import Pregame from './Pregame.vue'
-import Play from './Play.vue'
-import Review from './Review.vue'
+import AdminPanel from './AdminPanel.vue'
 export default{
-	name: 'LobbyVue',
+	name: 'Pregame',
 	props:{
 	},
 	components:{
-		Pregame,
-		Play,
-		Review
+		AdminPanel
 	},
 	data: function() {
 		return {
