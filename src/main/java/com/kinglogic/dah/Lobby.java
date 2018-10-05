@@ -23,6 +23,7 @@ public class Lobby {
     private int maxRounds;
     private int maxPlayers;
     private final ArrayList<String> players;
+    private final ArrayList<Booklet> booklets;
     private final HashMap<String, Player> playerData;
     
 
@@ -36,6 +37,7 @@ public class Lobby {
         maxRounds = 10;
         maxPlayers = 10;
         players = new ArrayList<>();
+        booklets = new ArrayList<>();
         playerData = new HashMap<>();
         
     }
@@ -98,6 +100,7 @@ public class Lobby {
             maxPlayers = 10;
             players.clear();
             playerData.clear();
+            booklets.clear();
             return true;
         }
         return false;
@@ -133,6 +136,7 @@ public class Lobby {
     public boolean RemovePlayer(String player){
         if(players.contains(player)){
             players.remove(player);
+            booklets.remove(playerData.get(player).currentBooklet);
             playerData.remove(player);
             return true;
         }
@@ -151,25 +155,53 @@ public class Lobby {
             }
     } 
     
+    public void StartGame(){
+        if(roundNumber < 0)
+            AdvanceRound();
+        
+    }
+    
     /**
      * 
      * @return the new round number 
      */
-    public int AdvanceRound(){
+    private int AdvanceRound(){
         if(roundNumber < 0){//set up the game for playing
             roundNumber = 0;
             isInProgress = true;
             for (String playerID: players) {
                 Player p = playerData.get(playerID);
-                p.currentBooklet = new Booklet(p.name, maxRounds);
+                Booklet b = new Booklet(playerID, maxRounds+1);
+                booklets.add(b);
+                p.currentBooklet = b;
             }
-        }else if(roundNumber < maxRounds){//in play state
+        }else if(roundNumber <= maxRounds){//in play state
             roundNumber++;
             //TODO swap booklets
+                //dont swap on the first transition iff there are an even number of players
+            
+            for (String playerID: players) {
+                playerData.get(playerID).submitted = false;
+            }
+            
         }else{//in the review state
             isInProgress = false;
             
         }
+        return roundNumber;
+    }
+    
+    /**
+     * Check if all players have submitted, if so then advance the round
+     * @return the roundNumber
+     */
+    public int CheckRoundAdvance(){
+        for (int i = 0; i < players.size(); i++) {
+            if(!playerData.get(players.get(i)).submitted)
+                return roundNumber;//do not advance
+        }
+        //all players have submitted
+        AdvanceRound();
         return roundNumber;
     }
     
@@ -283,6 +315,14 @@ public class Lobby {
     }
 
     /**
+     * get a player's data
+     * @param id
+     * @return 
+     */
+    public Player getPlayerData(String id){
+        return playerData.get(id);
+    }
+    /**
      * @param players the players to set
      */
     public void setPlayers(ArrayList<String> players) {
@@ -325,4 +365,8 @@ public class Lobby {
         this.password = password;
     }
      
+    
+    public int getBookletIndex(Booklet b){
+        return booklets.indexOf(b);
+    }
 }

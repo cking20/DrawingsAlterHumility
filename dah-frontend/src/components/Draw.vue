@@ -1,6 +1,6 @@
 <template>
 	<div class = draw-vue>
-		<H1>Draw: Something</H1>
+		<H1>Draw: {{this.dataStore.getLastContentOfMyBooklet()}}</H1>
 			<div>
 				<canvas class="drawing-area" ref="theCanvas" width="640px" height="600px"  
 					@mousemove="mouseMove" 
@@ -97,7 +97,7 @@ export default{
 
 		
 	},
-	methods:{	
+	methods:{
 		loadLast: function(){
 			//todo
 			console.log(this.$refs)

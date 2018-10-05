@@ -7,7 +7,6 @@
 
     <component v-bind:is="datastore.state.currentVue"> </component>
     
-
     
 
     <h1>Test shared image</h1>
@@ -70,7 +69,7 @@ export default {
   methods:{
     refreshState: function(){
       //todo: only update the part that need updateing TBD when Vue Swither is built
-      this.reloadImage();
+      // this.reloadImage();
       // this.datastore.refreshMyLobbyData();
       // this.datastore.getAvailableLobbies();
     },

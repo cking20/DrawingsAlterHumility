@@ -6,6 +6,7 @@
 package com.kinglogic.dah;
 
 import com.google.gson.Gson;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 import spark.Session;
@@ -198,7 +199,9 @@ public class GameManager {
                 lobbies[lobby_id].setName(name);
                 lobbies[lobby_id].setMaxPlayers(maxPlayers);
                 lobbies[lobby_id].setMaxRounds(maxRounds);
-                if(password.compareTo("") == 0)
+                if(password == null)
+                    lobbies[lobby_id].setPassword(null);
+                else if(password.compareTo("") == 0)
                     lobbies[lobby_id].setPassword(null);
                 else
                     lobbies[lobby_id].setPassword(password);
@@ -217,10 +220,64 @@ public class GameManager {
         int lobby_id = admin.attribute("CURRENT_GAME");
         if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
             if(accesor_id.compareTo(lobbies[lobby_id].getAdminUuid()) == 0){//if its the admin stating it
-                lobbies[lobby_id].AdvanceRound();
+                lobbies[lobby_id].StartGame();
             }
         }
         return gson.toJson(lobbies[lobby_id], Lobby.class);  
+    }
+    
+    /**
+     * Submit a guess to the game. Ensures the integrity of the gamestate before
+     *      accepting the data.
+     * @param player that is submitting the guess
+     * @param gameID the game that the player is currently in
+     * @param guess the guess to be uploaded
+     * @return true iff the guess has been added to the game
+     */
+    public boolean SubmitGuess(String player, int gameID, String guess){
+         Lobby current = lobbies[gameID];
+         if(!current.isIsInProgress())
+             return false;
+         Player data = current.getPlayerData(player);
+         if(data == null)
+             return false;
+         if(guess == null)
+             return false;
+         Page newPage = Page.BuildGuess(player, guess);
+         if( data.currentBooklet.submit(player, current.getRoundNumber(), newPage)){
+             data.submitted = true;
+             current.CheckRoundAdvance();
+             return true;
+         }
+         return false;         
+    }
+    
+    /**
+     * Submit a drawing to the game. Ensures the integrity of the gamestate before
+     *      accepting the data. Uploads the image from the stream to the Resource 
+     *      Manager
+     * @param player that is submitting the drawing
+     * @param gameID the game that the player is currently in
+     * @param stream the part's stream to be uploaded
+     * @return true iff the image has been added to the game
+     */
+    public String SubmitDrawing(String player, int gameID, InputStream stream){
+         Lobby current = lobbies[gameID];
+         if(!current.isIsInProgress())
+             return null;
+         Player data = current.getPlayerData(player);
+         if(data == null)
+             return null;
+         
+         int bookletIndex = current.getBookletIndex(data.currentBooklet);
+         String path = ResourceManager.getInstance().saveImage(gameID, bookletIndex, current.getRoundNumber(), stream);
+         Page newPage = Page.BuildDrawing(player, path);
+         if( data.currentBooklet.submit(player, current.getRoundNumber(), newPage)){
+             data.submitted = true;
+             current.CheckRoundAdvance();
+             return path;
+         }
+         return null;
     }
 
 }

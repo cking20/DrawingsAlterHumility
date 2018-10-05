@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import static com.kinglogic.dah.ResourceManager.tempDir;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +32,7 @@ public class ServerApp {
         staticFileLocation("public");
         GameManager.getInstance();
         ResourceManager.getInstance();
+        ResourceManager.getInstance().LoadResources();
         Spark.externalStaticFileLocation("temp");
         port(getHerokuAssignedPort());
         configureRoutes();
@@ -44,6 +46,7 @@ public class ServerApp {
             //return JSON
             before("/*", (request, response) -> {
                 response.type("application/json");
+//                response.header("Access-Control-Allow-Origin", "*");
 //                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
                 response.header("Access-Control-Allow-Origin", "http://drawings-alter-humility.herokuapp.com");
                 
@@ -58,11 +61,13 @@ public class ServerApp {
             configureLobbiesEndpoints();
 //            configureCurrentLobbyEndpoints();
             configureImagesEndpoints();
+            configurePromptsEndpoints();
             
             
             get("/hello", (request,response) ->{
                 return "{\"message\": \"hi there\"}";
             });  
+            
         });      
     }
     
@@ -198,9 +203,108 @@ public class ServerApp {
                     return "{\"message\": \"nope, stars. can't leave\"}";
                 });
                 
+                
+                configureSubmitEndpoints();
+                
             });
             
                     
+        });
+    }
+    
+    /**
+     * Set up routes for submitting plays
+     */
+    public static void configureSubmitEndpoints(){
+        before("/submitdrawing", (request, response) -> {
+            if(request.session().attribute("CURRENT_GAME") == null)
+                halt(403, "{\"message\": \"you dont have a game in your session\"");
+        });
+        post("/submitdrawing", (request,response) ->{
+//            int lobby, booklet, page;
+            try{
+//                lobby = request.session().attribute("CURRENT_GAME");
+//                booklet = Integer.parseInt(request.params(":booklet"));
+//                page = Integer.parseInt(request.params(":page"));
+
+                request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+                try{
+                    InputStream input = request.raw().getPart("uploaded_file").getInputStream();
+                    String fileName = GameManager.getInstance().SubmitDrawing(
+                            request.session().id(),
+                            (request.session().attribute("CURRENT_GAME")),
+                            input);
+                            
+                            
+                            
+//                    String fileName = ResourceManager.getInstance().saveImage(
+//                        lobby, booklet, page, input);
+                    System.out.println("saved to"+ fileName);
+                    return "{\"url\": \""+fileName+"\"}";
+                }catch(IOException e){
+                    System.err.println(e);
+                }
+            }catch(NumberFormatException e){
+                System.err.println(e);
+                halt(406, "invalid id format");
+            }
+            return ""; 
+////            request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+//            if(request.body() != null){
+//                if(request.session().attribute("CURRENT_GAME") != null){
+//                    try{
+////                        if(request.raw().getPart("uploaded_file") == null)
+////                            halt(400);
+//                        request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+//                        InputStream pictureStream = request.raw().getPart("uploaded_file").getInputStream();
+//                        if( GameManager.getInstance().SubmitDrawing(
+//                                request.session().id(),
+//                                (request.session().attribute("CURRENT_GAME")),
+//                                pictureStream))
+//                            return "good stuff";
+//                    }catch(IOException e){
+//                        System.err.println(e);
+//                        halt(500);
+//                    }
+//                } else halt(403);   
+//            }
+//            return "";
+        });
+
+
+
+        before("/submitguess", (request, response) -> {
+            if(request.session().attribute("CURRENT_GAME") == null)
+                halt(403, "{\"message\": \"you dont have a game in your session\"");
+        });
+        post("/submitguess", (request,response) ->{
+            
+            if(request.body() != null){
+                if(request.session().attribute("CURRENT_GAME") != null){
+                    try{
+                        Gson gson = new Gson();
+                        HashMap<String,Object> map = new HashMap();
+                        map = (HashMap<String,Object>) gson.fromJson(request.body(), map.getClass());
+                        int currentGame = request.session().attribute("CURRENT_GAME");
+                        String playerID = request.session().id();
+                        if(map != null && map.containsKey("guess")){
+                            String guess = (String) map.get("guess");
+                            System.out.println("submitting" + guess);
+                            if( GameManager.getInstance().SubmitGuess(
+                                    playerID,
+                                    currentGame,
+                                    guess))
+                            return "good stuff";
+                        }
+                    }catch(JsonSyntaxException js){
+                        System.err.println(js);
+                        halt(400, js.getMessage());
+
+                    }
+
+                } else halt(403);   
+            }
+            return "";
         });
     }
     
@@ -242,6 +346,7 @@ public class ServerApp {
                     HttpServletResponse raw = response.raw();
     //                response.header("Content-Disposition", "attachment; filename=image.jpg");
                     response.type("image/png");
+                    if(data != null)
                     try {
                         raw.getOutputStream().write(data);
                         raw.getOutputStream().flush();
@@ -261,6 +366,63 @@ public class ServerApp {
                 }
                 return "<h1>You uploaded this image:<h1><img src='" + tempFile.getFileName()+ "'>";
             });
+            
+            get("/:lobby/:booklet/:page", (request,response) ->{
+                response.type("image/png");
+                byte[] data = null;
+                int lobby, booklet, page;
+                try{
+                    lobby = Integer.parseInt(request.params(":lobby"));
+                    booklet = Integer.parseInt(request.params(":booklet"));
+                    page = Integer.parseInt(request.params(":page"));
+                    
+                    data = ResourceManager.getInstance().getImage(
+                        lobby, booklet, page);
+                    if(data != null){
+                        HttpServletResponse raw = response.raw();
+                        response.type("image/png");
+                        try {
+                            raw.getOutputStream().write(data);
+                            raw.getOutputStream().flush();
+                            raw.getOutputStream().close();
+                            return raw;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            halt(500, "error writing image data to response");
+                        }
+                    }else{
+                        halt(404, "Image does not exist");
+                    }
+                    
+                }catch(NumberFormatException e){
+                    halt(406, "invalid id format");
+                }
+                return "";   
+            });
+            
+            post("/:lobby/:booklet/:page", (request,response) ->{
+                int lobby, booklet, page;
+                try{
+                    lobby = Integer.parseInt(request.params(":lobby"));
+                    booklet = Integer.parseInt(request.params(":booklet"));
+                    page = Integer.parseInt(request.params(":page"));
+                    
+                    request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+                    try{
+                        InputStream input = request.raw().getPart("uploaded_file").getInputStream();
+                        String fileName = ResourceManager.getInstance().saveImage(
+                            lobby, booklet, page, input);
+                        return "{\"url\": \""+fileName+"\"}";
+                    }catch(IOException e){
+                        System.err.println(e);
+                    }
+                }catch(NumberFormatException e){
+                    System.err.println(e);
+                    halt(406, "invalid id format");
+                }
+                return "";   
+            });
+ 
         });
         
     }
@@ -284,8 +446,6 @@ public class ServerApp {
                 Gson gson = new Gson();
                 HashMap<String,Object> map = new HashMap();
                 
-                System.out.println(request.body());
-                System.out.println(request.contentType());
                 
                 if(request.body() != null){
                     try{
@@ -320,20 +480,26 @@ public class ServerApp {
              * Retrun the data of the game the session is currently in
              */
             get("/lobby", (request,response) ->{
-                    String data = GameManager.getInstance().getLobby(request.session().attribute("CURRENT_GAME"));
-                    if(data == null)
-                        halt(400);
-                    return data;
-                });
-                
-            
-            /**
-             * Return the player's lobbies game data
-             */
-            get("/game", (request,response) ->{
-                return null;
+                String data = GameManager.getInstance().getLobby(request.session().attribute("CURRENT_GAME"));
+                if(data == null)
+                    halt(400);
+                return data;
             });
             
+            configureSubmitEndpoints();
+                
+            
+            
+            
+        });
+    }
+    
+    /**
+     * Set all routes for getting prompts
+     */
+    public static void configurePromptsEndpoints(){
+        get("/prompts", (request,response) ->{
+            return ResourceManager.getInstance().getPrompts(10);
         });
     }
     

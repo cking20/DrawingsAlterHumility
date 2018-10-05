@@ -12,6 +12,7 @@ package com.kinglogic.dah;
 public class Player {
     public String name;
     public Booklet currentBooklet;
+    public boolean submitted = false;
     public int votes = 0;
     
 }

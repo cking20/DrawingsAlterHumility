@@ -9,7 +9,7 @@
 
 		<div>
 			<Pregame v-if="datastore.state.myLobby.roundNumber == -1"></Pregame>
-			<Play v-else-if="datastore.state.myLobby.roundNumber < datastore.state.myLobby.maxRounds"></Play>
+			<Play v-else-if="datastore.state.myLobby.roundNumber <= datastore.state.myLobby.maxRounds"></Play>
 			<Review v-else></Review>
 		</div>
 

@@ -4,14 +4,41 @@ const store = {
 	state:{
 		currentVue: 'BrowserVue',
 		tempImageData:null,
+		prompts: null,
 		myData:{},
 		myLobby:null,
 		knownLobbies:[],
+	},
+	testImage: function(dataURL, callbackFunction){
+		//help found from https://stackoverflow.com/questions/19032406/convert-html5-canvas-into-file-to-be-uploaded
+		var blobBin = atob(dataURL.split(',')[1]);
+		var array = [];
+		for(var i = 0; i < blobBin.length; i++) {
+		    array.push(blobBin.charCodeAt(i));
+		}
+		var file = new Blob([new Uint8Array(array)], {type: 'image/png'});
+		var formdata = new FormData();
+		formdata.append("uploaded_file", file);
+		post(this.host + '/images/0/0/0', formdata, function(xhttp){
+			console.log(xhttp);
+			callbackFunction();
+		});
 	},
 	//todo This is just for testing, will need to do waaaay more than this
 	refreshImage: function(callbackFunction){
 		var data;
 		hitImage('GET', this.host + '/images/testimage', function(xhttp){
+			// console.log(xhttp.responseText);
+			// var dataURL="data:image/png;base64,"+xhttp.responseText;
+			var arr = new Uint8Array(xhttp.response);
+			var raw = String.fromCharCode.apply(null,arr);
+			var dataURL=btoa(raw);
+			callbackFunction("data:image/png;base64,"+(dataURL));
+		});
+	},
+	loadImage: function(callbackFunction){
+		var data;
+		hitImage('GET', this.host + '/images'+ this.getLastContentOfMyBooklet(), function(xhttp){
 			// console.log(xhttp.responseText);
 			// var dataURL="data:image/png;base64,"+xhttp.responseText;
 			var arr = new Uint8Array(xhttp.response);
@@ -30,8 +57,14 @@ const store = {
 		var file = new Blob([new Uint8Array(array)], {type: 'image/png'});
 		var formdata = new FormData();
 		formdata.append("uploaded_file", file);
-		post(this.host + '/images/testimage', formdata, function(xhttp){
+		post(this.host + '/me/submitdrawing', formdata, function(xhttp){
 			callbackFunction();
+		});
+	},
+	submitGuess: function(guess){
+		var guessJSON = '{"guess": "' + guess + '"}';
+		post(this.host + '/me/submitguess', guessJSON, function(xhttp){
+			// store.state.myData = JSON.parse(xhttp.responseText);
 		});
 	},
 	test: function(){
@@ -112,6 +145,17 @@ const store = {
 			// store.state.myLobby = JSON.parse(xhttp.responseText);
 		});
 		vueStateTransition();
+	},
+	getPrompts: function(){
+		hit('GET', this.host + '/prompts', function(xhttp){
+			store.state.prompts = JSON.parse(xhttp.responseText);
+		});
+	},
+	getLastContentOfMyBooklet: function(){
+		var currentBooklet = store.state.myLobby.playerData[store.state.myData.id].currentBooklet;
+		var lastRoundNum = store.state.myLobby.roundNumber - 1;
+		var content = currentBooklet.pages[lastRoundNum].content;
+		return content;
 	}
 }
 

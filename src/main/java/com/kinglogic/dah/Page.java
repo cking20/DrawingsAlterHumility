@@ -16,6 +16,10 @@ public class Page {
     private static long idCounter = 0;
     private final long id;
     private final String creator;
+    
+    /**
+     * used for the front end, but its kind of redundant
+     */
     private final boolean isImage;
     private final String content;
     private ArrayList<String> votes;
@@ -33,6 +37,14 @@ public class Page {
         this.creator = creator;
         id = idCounter++;
         this.content = content;
+    }
+    
+    private Page(){
+        id = -1;
+        creator = null;
+        content = null;
+        votes = null;
+        isImage = false;
     }
     
     /**
