@@ -1,16 +1,13 @@
 <template>
   <div id="app">
 
-    <input v-model="name" placeholder="Set Name">
-    <p>Name is: {{ name }}</p>
-    <button @click="submitNewName()">Set</button>
-
-    <component v-bind:is="datastore.state.currentVue"> </component>
-    
+    <div class="center">
+      <component v-bind:is="datastore.state.currentVue"> </component>
+    </div>
     
 
-    <h1>Test shared image</h1>
-    <img id="testImage" ref="testImage">
+    <!-- <h1>Test shared image</h1>
+    <img id="testImage" ref="testImage"> -->
 
     <div class="fb-like" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button" data-action="like" data-size="large" data-show-faces="false" data-share="false">
     </div>
@@ -37,6 +34,7 @@
 <script>
   import socialConnector from './socialConnector.js'
   import store from './store.js'
+  import LandingVue from './components/LandingVue.vue'
   import BrowserVue from './components/BrowserVue.vue'
   import DrawVue from './components/Draw.vue'
   import LobbyVue from './components/LobbyVue.vue'
@@ -48,20 +46,20 @@ export default {
   components: {
     DrawVue,
     LobbyVue,
-    BrowserVue 
+    BrowserVue,
+    LandingVue 
   },
   data: function() {
     return {
       sapi : socialConnector.socialConnector,
       datastore: store.store,
       currentVue: 'BrowserVue',
-      imgRef: {},
-      name: '',
+      // imgRef: {},
       refresher: ''
     }
   },
   mounted: function(){
-    this.imgRef = this.$refs['testImage']; 
+    // this.imgRef = this.$refs['testImage']; 
   },
   created: function(){
     this.refresher = setInterval(this.refreshState,5000);
@@ -76,13 +74,11 @@ export default {
     reloadImage: function () {
       // this.imgRef.src = "";
       // this.imgRef.src = this.datastore.host+'/images/testimage';
-      this.datastore.refreshImage(function(url){
-        document.getElementById("testImage").src = url;
-      }); 
-    },
-    submitNewName: function(){
-      this.datastore.changeName(this.name);
+      // this.datastore.refreshImage(function(url){
+      //   document.getElementById("testImage").src = url;
+      // }); 
     }
+    
   }
 }
 </script>
@@ -93,8 +89,45 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #ffffff;
   margin-top: 60px;
+}
+
+body{
+  background-color: #252525;
+  white-space: no-wrap; 
+}
+
+button{
+    border: 2px solid lightgrey;
+    border-radius: 4px;
+    width: 50%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    color: white;
+    background: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+button:hover{
+  background-color: #acacac;
+}
+input{
+    text-align: center;
+    border: 2px solid white;
+    border-radius: 4px;
+    width: 50%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+input:focus {
+    background-color: lightgrey;
+    border-color: lightgrey;
 }
 
 h1, h2 {
@@ -113,5 +146,49 @@ li {
 
 a {
   color: #42b983;
+}
+
+.submit{
+  background-color: #569818;
+  border-color: #569818;
+}
+.submit:hover{
+  background-color: #69dd01;
+  border-color: #69dd01;
+}
+.cancel{
+  background-color: #9a1842;
+  border-color: #9a1842;
+}
+.cancel:hover{
+  background-color: #db0147;
+  border-color: #db0147;
+}
+:disabled{
+  background-color: lightgrey;
+  border-color: lightgrey;
+}
+:disabled:hover{
+  background-color: lightgrey;
+  border-color: lightgrey;
+}
+.center{
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+}
+.panel{
+  color: #0a0a0a;
+  background-color: #acacac;
+  border-radius: 4px;
+  padding: 12px 20px;
+  margin: 8px 0;
+}
+.card{
+  padding: 0;
+  margin: 10px;
+  color: #0a0a0a;
+  background-color: #acacac;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 1), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
-  <div id="admin-panel">
+  <div id="admin-panel" class="panel">
+    <H2>Settings</H2>
     <p>Name<br><input v-model="tempLobbyDataCopy.name"></p>
     <p>Password<br><input v-model="tempLobbyDataCopy.password"></p>
     
@@ -10,8 +11,8 @@
       <input type="range" v-model.number="tempLobbyDataCopy.maxPlayers" min=4 max=12>
     </p>
 
-    <button v-on:click="updateSettings()">Update</button>
-    <button v-on:click="start()">START</button>
+    <button class="submit" v-on:click="updateSettings()">Update</button>
+    <button class="submit" v-on:click="start()">START</button>
     
 
 
@@ -52,4 +53,10 @@ export default {
 </script>
 
 <style lang="scss">
+button{
+  width: 100%;
+}
+input{
+  width: 100%;
+}
 </style>

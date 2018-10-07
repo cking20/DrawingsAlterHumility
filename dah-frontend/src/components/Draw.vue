@@ -2,7 +2,7 @@
 	<div class = draw-vue>
 		<H1>Draw: {{this.dataStore.getLastContentOfMyBooklet()}}</H1>
 			<div>
-				<canvas class="drawing-area" ref="theCanvas" width="640px" height="600px"  
+				<canvas class="drawing-area card" ref="theCanvas" width="300" height="300" style="width: 90%; height: 100%;"
 					@mousemove="mouseMove" 
 					@mousedown="mouseDown" 
 					@mouseup="mouseUp" 
@@ -15,33 +15,32 @@
 					>Your Browser does not support Fun things		
 					</canvas>
 			</div>
-			<div class="horizontal drawing-toolbar">
+			<div class="drawing-toolbar">
+				<div class="slider">
+					<input  type="range" id="lineWidth" ref="lineWidth" min="1" max="50" value="2" v-on:change="updateLineWidth(); ">
+				</div>
 				<ul>
-					<li><input class="tool slider" type="range" id="lineWidth" ref="lineWidth" min="1" max="50" value="2" v-on:change="updateLineWidth()"></li>
-					<li><input class="tool" 
-						type="color" ref="color" value="#000000" id="color" v-on:change="updateColor()" >
-					</li>
+					<li><input class="tool" type="color" ref="color" value="#000000" id="color" v-on:change="updateColor()" style="background-color: black;"></li>
 					<li><input class="tool" type="button" value="Pen" id="pen" v-on:click="pen"></li>
 					<li><input class="tool" type="button" value="Erase" id="erase" v-on:click="color = backgroundColor"></li>
 					<li><input class="tool"
 						type="button" value="Save" id="save"  v-on:click="saveImage()"></li>
 					<li><input class="tool" 
 						type="button" value="Load" id="load"  v-on:click="loadImage()"></li>
-					<li><input class="tool" type="button" value="Clear" id="clear"  v-on:click="eraseImage()"></li>
+					<li><input class="tool cancel" type="button" value="Clear" id="clear"  v-on:click="eraseImage()"></li>
 					
 					<li><input class="tool" 
 						type="button" value="Bg" id="background" v-on:click="showBackGroundSelect = !showBackGroundSelect">
 						<input v-if="showBackGroundSelect" class="tool theme-selector" type="color" ref="bgColor" value="#000000" id="bgColor" v-on:change="fillBackground()">
 					</li>
-					<li><input class="tool start" type="button" value="Submit" id="submit" v-on:click="submit" style="width: auto; float: right;">
-					</li>
 				</ul>
+				<input class="submit" type="button" value="Submit" id="submit" v-on:click="submit">
 				
 					
 			</div>
-			<div class="horizontal">
+			<div class="">
 				<ul class="history">
-					<li v-for="(undo, index) in undos" v-if="index < 4"><img width="160px" height="160px" :ref="'undos'+index" :src="undo" @click="loadLast()"></li>		
+					<li v-for="(undo, index) in undos" v-if="index < 4"><img class="card" width="20%" :ref="'undos'+index" :src="undo" @click="loadLast()"></li>		
 				</ul>
 			</div>
 			
@@ -63,6 +62,7 @@ export default{
 			showBackGroundSelect: false,
 			canvas: null, 
 			context: null,
+			gl: null,
 			w: 0,
 			h: 0,		
 			drawFlag: false,
@@ -80,6 +80,7 @@ export default{
 	mounted: function(){
 		this.canvas = this.$refs['theCanvas']; 
 		this.context = this.canvas.getContext('2d');
+		this.gl = this.canvas.getContext('webgl');
 		this.w = this.canvas.width;
 		this.h = this.canvas.height;
 		this.context.fillStyle=this.backgroundColor;
@@ -108,6 +109,7 @@ export default{
 		},
 		updateColor: function(){
 			this.color = this.$refs['color'].value;
+			this.$refs['color'].style.backgroundColor = this.color;
 		},
 		updateTheme: function(theme){
 			console.log("themed");
@@ -189,8 +191,14 @@ export default{
 		updatePositionData: function(mouse){
 			this.prevX = this.curX;
 			this.prevY = this.curY;
-			this.curX = mouse.clientX - this.canvas.offsetLeft-10;
-			this.curY = mouse.clientY - this.canvas.offsetTop +window.pageYOffset-10;
+			this.curX = mouse.clientX - this.canvas.offsetLeft;
+			this.curY = mouse.clientY - this.canvas.offsetTop +window.pageYOffset;
+
+			//scale for window viewport resizing
+						//the display width
+			this.curX /= (this.canvas.offsetWidth/ this.canvas.width);
+			this.curY /= (this.canvas.offsetHeight/ this.canvas.height);
+			// this.gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 		},
 		updateLineWidth: function(){
 			this.lineWidth = this.$refs['lineWidth'].value;
@@ -237,3 +245,22 @@ export default{
 	}
 }
 </script>
+<style lang="scss">
+input[type=button]{
+	border: 0;
+	color: white;
+	text-decoration: none;
+	-webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+input[type=range]{
+	padding: 0;
+}
+ul{
+	margin: 0;
+}
+li{
+	margin-left: 0;
+    margin-right: 0;
+}
+</style>

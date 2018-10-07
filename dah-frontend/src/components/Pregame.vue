@@ -1,25 +1,27 @@
 <template>
 	<div class = pregame-vue>
-		<div v-if="isAdmin()">
-			<H2>Admin Panel Vue</H2>
+		<H1>Lobby {{datastore.getMyLobbyData().name}}</H1>
+		<button class="cancel" v-on:click="datastore.leaveLobby()">Leave Lobby</button>
+		<div v-if="isAdmin()" class="center horizontal card">
 			<AdminPanel></AdminPanel>
 		</div>
-
-		
-
-		
+		<div v-bind:class="{ center: isAdmin(), horizontal: isAdmin(), card: true}">
+			<PlayerPanel ></PlayerPanel>
+		</div>
 	</div>
 </template>
 
 <script>
 import store from '../store.js'
 import AdminPanel from './AdminPanel.vue'
+import PlayerPanel from './PlayerPanel.vue'
 export default{
 	name: 'Pregame',
 	props:{
 	},
 	components:{
-		AdminPanel
+		AdminPanel,
+		PlayerPanel
 	},
 	data: function() {
 		return {
@@ -50,3 +52,15 @@ export default{
 	}
 }
 </script>
+<style lang="scss">
+.cancel{
+	width: 100%;
+}
+.horizontal{
+	width:45%;
+	display: inline-block;
+	overflow: hidden;
+	vertical-align: top;
+}
+
+</style>

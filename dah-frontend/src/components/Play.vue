@@ -1,8 +1,5 @@
 <template>
 	<div class = play-vue>
-		
-		<H1>Play Vue IN DEV</H1>
-		
 		<div>
 			<ChooseVue v-if="datastore.state.myLobby.roundNumber == 0"></ChooseVue>
 			<DrawVue v-else-if="datastore.state.myLobby.roundNumber % 2 == 1"></DrawVue>

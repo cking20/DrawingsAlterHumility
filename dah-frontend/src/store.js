@@ -2,7 +2,7 @@ const store = {
 	// host: 'http://localhost:4567/game',
 	host: 'https://drawings-alter-humility.herokuapp.com/game',
 	state:{
-		currentVue: 'BrowserVue',
+		currentVue: 'LandingVue',
 		tempImageData:null,
 		prompts: null,
 		myData:{},
@@ -103,10 +103,11 @@ const store = {
 		vueStateTransition();
 	},
 	changeName: function(name){
-		var nameJSON = '{"name": ' + name + '}';
+		var nameJSON = '{"name": "' + name + '"}';
 		post(this.host + '/me/name', nameJSON, function(xhttp){
 			store.state.myData = JSON.parse(xhttp.responseText);
 		});
+		vueStateTransition();
 	},
 	joinLobby: function(lobbyID){
 		hit('POST', this.host + '/lobbies/'+ lobbyID + '/join', function(xhttp){
@@ -160,6 +161,9 @@ const store = {
 }
 
 function vueStateTransition(){
+	if(store.state.myData.name != null){
+		store.state.currentVue = 'BrowserVue';
+	}
 	if(store.state.myLobby == null){
 		store.state.currentVue = 'BrowserVue';
 	}

@@ -1,28 +1,22 @@
 <template>
-	<div class = choose-vue>
-		
+	<div class = "choose-vue">
 		<H1>Choose A Starting Phrase</H1>
-
-		<p>todo: get phrases</p>
-
-		<ul>
-			<li v-for="prompt in datastore.state.prompts">
-				<p :id="prompt" @click="select(prompt)">{{prompt}}</p><br>
-				<!-- <button>{{prompt}}</button> -->
-			</li>
-		</ul>
-
+		<div class="card">
+			<ul>
+				<li v-for="prompt in datastore.state.prompts" class="item">
+					<p :id="prompt"  @click="select(prompt)">{{prompt}}</p><br>
+					<!-- <button>{{prompt}}</button> -->
+				</li>
+			</ul>
+		</div>
+<!-- 
 		<select name="cars" size=10>
 		  <option v-for="prompt in datastore.state.prompts" :value="prompt">{{prompt}}</option>
 		</select>
-
-		<button @click="submit()">SUBMIT</button>
+ -->
+		<button class="submit" :disabled="!isValid" @click="submit()">SUBMIT</button>
 		
-		
-
-		
-
-		
+	
 	</div>
 </template>
 
@@ -41,6 +35,11 @@ export default{
 			selected: null
 		}
 	},
+	computed:{
+		isValid: function() {
+	    	return this.selected != null;
+		}
+	},
 	mounted: function(){
 		
 	},
@@ -55,11 +54,26 @@ export default{
     	},
     	select: function(item){
     		if(this.selected != null)
-    			document.getElementById(this.selected).style = "color: black;";
+    			document.getElementById(this.selected).classList.remove('selected');
     		this.selected = item;
-    		document.getElementById(item).style = "color: blue;";
+    		document.getElementById(item).classList.add('selected');
     		console.log(item);
-    	}
+    	},
 	}
 }
 </script>
+<style lang="scss">
+	.selected{
+		color: white;
+	}
+	.item{
+		display: block;
+		margin-bottom: 0;
+	}
+	.item p{
+		margin-top : 0;
+		padding-top: 20px;
+		margin-bottom: 0px;
+		text-align: center;
+	}
+</style>

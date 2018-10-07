@@ -2,9 +2,9 @@
 	<div class = guess-vue>
 		
 		<H1>Guess what this is</H1>
-		<img id="testImage" ref="testImage">
+		<img id="testImage" ref="testImage" width="100%">
 		<input v-model="guess" placeholder="Your Guess Here">
-		<button @click="submit()">SUBMIT</button>
+		<button @click="submit()" class="submit" :disabled="!isValid">SUBMIT</button>
 
 		
 
@@ -26,6 +26,11 @@ export default{
 			datastore: store.store,
 			imgRef: {},
 			guess: null
+		}
+	},
+	computed:{
+		isValid: function() {
+	    	return this.guess != null;
 		}
 	},
 	mounted: function(){
