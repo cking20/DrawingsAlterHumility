@@ -92,6 +92,11 @@ export default {
   color: #ffffff;
   margin-top: 60px;
 }
+@media only screen and (max-width: 600px) {
+    #app {
+        margin-top: 0px;
+    }
+}
 
 body{
   background-color: #252525;
@@ -116,6 +121,7 @@ button{
 button:hover{
   background-color: #acacac;
 }
+
 input{
     text-align: center;
     border: 2px solid white;
@@ -156,6 +162,7 @@ a {
   background-color: #69dd01;
   border-color: #69dd01;
 }
+
 .cancel{
   background-color: #9a1842;
   border-color: #9a1842;
@@ -164,6 +171,7 @@ a {
   background-color: #db0147;
   border-color: #db0147;
 }
+
 :disabled{
   background-color: lightgrey;
   border-color: lightgrey;
@@ -172,11 +180,19 @@ a {
   background-color: lightgrey;
   border-color: lightgrey;
 }
+
 .center{
   margin: auto;
   width: 50%;
   padding: 10px;
 }
+@media only screen and (max-width: 600px) {
+    .center {
+        width: 100%;
+        padding: 0px;
+    }
+}
+
 .panel{
   color: #0a0a0a;
   background-color: #acacac;
@@ -184,11 +200,17 @@ a {
   padding: 12px 20px;
   margin: 8px 0;
 }
+
 .card{
   padding: 0;
   margin: 10px;
   color: #0a0a0a;
   background-color: #acacac;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 1), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+@media only screen and (max-width: 600px) {
+    .card {
+        margin: 0px;
+    }
 }
 </style>

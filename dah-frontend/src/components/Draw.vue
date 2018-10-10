@@ -8,9 +8,9 @@
 					@mouseup="mouseUp" 
 					@mouseover="mouseOver"
 
-					@touchmove.prevent="mouseMove" 
-					@touchstart="mouseDown" 
-					@touchend="mouseUp" 
+					@touchmove.prevent="touchMove" 
+					@touchstart="touchDown" 
+					@touchend="touchUp" 
 
 					>Your Browser does not support Fun things		
 					</canvas>
@@ -74,7 +74,8 @@ export default{
 			backgroundColor: '#e6e6e6',
 			startFlag: false,
 			lineWidth: 2,
-			undos:[]
+			undos:[],
+			touch: null
 		}
 	},
 	mounted: function(){
@@ -189,6 +190,7 @@ export default{
 			this.$refs['saveImg'].src = dataURL;
 		},		
 		updatePositionData: function(mouse){
+			console.log(mouse.clientX +' , '+ mouse.clientY);
 			this.prevX = this.curX;
 			this.prevY = this.curY;
 			this.curX = mouse.clientX - this.canvas.offsetLeft;
@@ -228,6 +230,35 @@ export default{
 				this.draw();
 			}
 		},
+
+
+		touchDown: function(mouse){
+			console.log("touchdown");
+			this.updatePositionData(mouse.touches[0]);
+			this.drawFlag = true;
+			this.startFlag = true;
+			if (this.startFlag){
+				//might want to do more here
+				//save to undo
+				this.addToUndos();
+				this.startFlag = false;
+				this.drawCap();	
+			}
+		},
+		touchUp: function(mouse){
+			console.log("touchup");
+			this.drawFlag = false;
+			
+		},
+		touchMove: function(mouse){
+			console.log("touchmove");
+			if(this.drawFlag){
+				this.updatePositionData(mouse.touches[0]);
+				this.draw();
+			}
+		},
+
+
 		addToUndos: function(){
 			this.undos.splice(0,0,this.canvas.toDataURL());
 			var maxUndos = 10;
@@ -257,6 +288,9 @@ input[type=range]{
 	padding: 0;
 }
 ul{
+	margin: 0;
+}
+h1{
 	margin: 0;
 }
 li{

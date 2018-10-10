@@ -113,6 +113,8 @@ public class Lobby {
      * @return 
      */
     public boolean JoinPlayer(String playerID, String playerName, String password){
+        if(password == null)
+            password = "";
         if(!isReleased && !isInProgress){//the lobby is in the waiting for players state
             if(this.getPassword() == null//the lobby is public
                     || (this.getPassword() != null && this.getPassword().compareTo(password) == 0))//the lobby is private and the player knows the password
@@ -155,7 +157,12 @@ public class Lobby {
             }
     } 
     
+    /**
+     * Begin the game. Only allowable if the game is checkedout and not already started
+     */
     public void StartGame(){
+        if(isReleased || isInProgress)
+            return;
         if(roundNumber < 0)
             AdvanceRound();
         
@@ -196,6 +203,8 @@ public class Lobby {
      * @return the roundNumber
      */
     public int CheckRoundAdvance(){
+        if(isReleased)
+            return roundNumber;
         for (int i = 0; i < players.size(); i++) {
             if(!playerData.get(players.get(i)).submitted)
                 return roundNumber;//do not advance
