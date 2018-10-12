@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package test_dah;
+package com.kinglogic.dah;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author chris
  */
-public class TestBooklet {
+public class BookletTest {
     @Test
     public void TestSubmit(){
         

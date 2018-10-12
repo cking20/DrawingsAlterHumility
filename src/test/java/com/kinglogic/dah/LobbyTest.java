@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package test_dah;
+package com.kinglogic.dah;
 
 import com.kinglogic.dah.Lobby;
 import com.kinglogic.dah.Player;
@@ -13,11 +13,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 /**
  *
  * @author chris
  */
-public class TestLobby {
+public class LobbyTest {
     @Test
     public void TestLobby(){
         Lobby test1 = new Lobby(0);
@@ -115,6 +116,7 @@ public class TestLobby {
         //EQ:3 - A player trys to join when it is full 
         ////////////////////////////
         //TBD test when it is full//
+//        fail("need to code before testing");
         ////////////////////////////
     }
     
@@ -221,6 +223,7 @@ public class TestLobby {
             assertEquals(test.getPlayerData("admin").submitted, false);
             ///////////////////////////////////////
             //TBD need to implement swap booklets//
+//            fail("need to code before testing");
             ///////////////////////////////////////
             
             
@@ -254,15 +257,15 @@ public class TestLobby {
             assertEquals(false, test.isIsInProgress());
             assertEquals(test.getPlayerData("admin").submitted, false);
         } catch (NoSuchMethodException ex) {
-            Logger.getLogger(TestLobby.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
-            Logger.getLogger(TestLobby.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(TestLobby.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(TestLobby.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvocationTargetException ex) {
-            Logger.getLogger(TestLobby.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

@@ -1,33 +1,39 @@
 <template>
 	<div class = "choose-vue">
-		<H1>Choose A Starting Phrase</H1>
-		<div class="card">
-			<ul>
-				<li v-for="prompt in datastore.state.prompts" class="item">
-					<p :id="prompt"  @click="select(prompt)">{{prompt}}</p><br>
-					<!-- <button>{{prompt}}</button> -->
-				</li>
-			</ul>
+		<div v-if="!this.datastore.getHaveISubmitted()">
+			<H1>Choose A Starting Phrase</H1>
+			<div class="card">
+				<ul>
+					<li v-for="prompt in datastore.state.prompts" class="item">
+						<p :id="prompt"  @click="select(prompt)">{{prompt}}</p><br>
+						<!-- <button>{{prompt}}</button> -->
+					</li>
+				</ul>
+			</div>
+	<!-- 
+			<select name="cars" size=10>
+			  <option v-for="prompt in datastore.state.prompts" :value="prompt">{{prompt}}</option>
+			</select>
+	 -->
+			<button class="submit" :disabled="!isValid" @click="submit()">SUBMIT</button>
 		</div>
-<!-- 
-		<select name="cars" size=10>
-		  <option v-for="prompt in datastore.state.prompts" :value="prompt">{{prompt}}</option>
-		</select>
- -->
-		<button class="submit" :disabled="!isValid" @click="submit()">SUBMIT</button>
-		
+		<div v-else>
+			<PlayersStatus></PlayersStatus>
+		</div>
 	
 	</div>
 </template>
 
 <script>
 import store from '../store.js'
+import PlayersStatus from './PlayersStatus.vue'
 
 export default{
 	name: 'ChooseVue',
 	props:{
 	},
 	components:{
+		PlayersStatus
 	},
 	data: function() {
 		return {

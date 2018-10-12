@@ -1,6 +1,7 @@
 <template>
 	<div class = draw-vue>
 		<H1>Draw: {{this.dataStore.getLastContentOfMyBooklet()}}</H1>
+		<div v-if="!this.dataStore.getHaveISubmitted()">
 			<div>
 				<canvas class="drawing-area card" ref="theCanvas" width="300" height="300" style="width: 90%; height: 100%;"
 					@mousemove="mouseMove" 
@@ -45,16 +46,22 @@
 			</div>
 			
 			<img id="saveImg" ref="saveImg" width="160px" height="160px" style="display: none">
+		</div>
+		<div v-else>
+			<PlayerStstus></PlayerStstus>
+		</div>	
 	</div>
 </template>
 
 <script>
 	import store from '../store.js'
+	import PlayersStatus from './PlayersStatus.vue'
 export default{
 	name: 'DrawVue',
 	props:{
 	},
 	components:{
+		PlayersStatus
 	},
 	data: function() {
 		return {

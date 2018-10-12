@@ -1,11 +1,14 @@
 <template>
 	<div class = guess-vue>
-		
+	<div v-if="!this.datastore.getHaveISubmitted()">
 		<H1>Guess what this is</H1>
 		<img id="testImage" ref="testImage" width="100%">
 		<input v-model="guess" placeholder="Your Guess Here">
 		<button @click="submit()" class="submit" :disabled="!isValid">SUBMIT</button>
-
+	</div>
+	<div v-else>
+		<PlayersStatus></PlayersStatus>
+	</div>	
 		
 
 		
@@ -14,12 +17,14 @@
 
 <script>
 import store from '../store.js'
+import PlayersStatus from './PlayersStatus.vue'
 
 export default{
 	name: 'GuessVue',
 	props:{
 	},
 	components:{
+		PlayersStatus
 	},
 	data: function() {
 		return {

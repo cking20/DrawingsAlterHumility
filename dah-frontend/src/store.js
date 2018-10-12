@@ -157,6 +157,9 @@ const store = {
 		var lastRoundNum = store.state.myLobby.roundNumber - 1;
 		var content = currentBooklet.pages[lastRoundNum].content;
 		return content;
+	},
+	getHaveISubmitted:function(){
+		return store.state.myLobby.playerData[store.state.myData.id].submitted;
 	}
 }
 

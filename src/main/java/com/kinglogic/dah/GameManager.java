@@ -16,7 +16,7 @@ import spark.Session;
  * @author chris
  */
 public class GameManager {
-    private static final int MAX_LOBBIES = 10;
+    public static final int MAX_LOBBIES = 10;
     private static GameManager instance;
     private Lobby[] lobbies;
     private final Gson gson;
@@ -59,13 +59,13 @@ public class GameManager {
      */    
     public String getJoinableLobbies(int amount, int offset){
         //verify the parameters are acceptable
-        if(amount < 0 || offset < 0 )
+        if(amount < 0 || offset < 0 || offset > MAX_LOBBIES || amount > MAX_LOBBIES)
             return null;
         
         //Search through the lobbies
         ArrayList<Lobby> lobbyList = new ArrayList<>();
         int numberReturned = 0;
-        for (int i = offset; i < lobbies.length && numberReturned < amount; i++) {
+        for (int i = offset; i < lobbies.length && numberReturned < amount && i < lobbies.length; i++) {
             if(!lobbies[i].isIsReleased() && !lobbies[i].isFull() && !lobbies[i].isIsInProgress()){
                 lobbyList.add(lobbies[i]);
                 numberReturned++;
@@ -76,8 +76,8 @@ public class GameManager {
     
     /**
      * Checkouts the lobby with admin_id as the admin 
-     * @param lobby_id must be >=0 and < MAX_LOBBIES
-     * @return the Lobby object's data iff the operation was completed succesfully
+     * @param admin the sesion to give admin privs to
+     * @return the Lobby object's data iff the operation was completed successfully
      */
     public String CheckoutLobby(Session admin){
         int lobby_id = -1;
@@ -106,6 +106,8 @@ public class GameManager {
      */
     public String ReleaseLobby(Session admin){
         String accesor_id = admin.id();
+        if(admin.attribute("CURRENT_GAME") == null)
+            return null;
         int lobby_id = admin.attribute("CURRENT_GAME");
         if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
             if(accesor_id.compareTo(lobbies[lobby_id].getAdminUuid()) == 0)//if its the admin releasing it
@@ -127,9 +129,11 @@ public class GameManager {
      * @return 
      */
     public boolean JoinLobby(Session playerSession, int lobby_id, String password){
+        if(playerSession.attribute("CURRENT_GAME") != null)
+            return false;
         if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
             if(!lobbies[lobby_id].isIsReleased()){//the lobby is released
-                if(lobbies[lobby_id].JoinPlayer(playerSession.id(),playerSession.attribute("NAME"), password)){//the lobby gets successfully checked out
+                if(lobbies[lobby_id].JoinPlayer(playerSession.id(),playerSession.attribute("NAME"), password)){//the lobby gets successfully joined
                     playerSession.attribute("CURRENT_GAME", lobby_id);
                     return true;
                 }
@@ -147,6 +151,8 @@ public class GameManager {
      */
     public boolean LeaveLobby(Session playerSession){
         String accesor_id = playerSession.id();
+        if(playerSession.attribute("CURRENT_GAME") == null)
+            return false;
         int lobby_id = playerSession.attribute("CURRENT_GAME");
         if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
             if(accesor_id.compareTo(lobbies[lobby_id].getAdminUuid()) == 0){//if its the admin leaving 
@@ -178,6 +184,7 @@ public class GameManager {
             int lobby_id = playerSession.attribute("CURRENT_GAME");
             if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
                 lobbies[lobby_id].updatePlayerName(playerSession.id(), playerSession.attribute("NAME"));
+                
             }
         }
     }
@@ -193,7 +200,11 @@ public class GameManager {
      */
     public String UpdateLobbySettings(Session admin, String name, int maxRounds, int maxPlayers, String password){
         String accesor_id = admin.id();
+        if(admin.attribute("CURRENT_GAME") == null){
+            System.err.println("admin current game = null");
+            return null;}
         int lobby_id = admin.attribute("CURRENT_GAME");
+        System.err.println("lobbyid "+lobby_id);
         if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
             if(accesor_id.compareTo(lobbies[lobby_id].getAdminUuid()) == 0){//if its the admin releasing it
                 lobbies[lobby_id].setName(name);
@@ -280,4 +291,11 @@ public class GameManager {
          return null;
     }
 
+    
+    /**
+     * Meant only for unit testing
+     */
+    private void NUKE(){
+        instance = null;
+    }
 }
