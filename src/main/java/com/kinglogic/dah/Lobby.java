@@ -113,6 +113,7 @@ public class Lobby {
      * @return 
      */
     public boolean JoinPlayer(String playerID, String playerName, String password){
+        if(isFull()) return false;
         if(password == null)
             password = "";
         if(!isReleased && !isInProgress){//the lobby is in the waiting for players state
@@ -180,12 +181,18 @@ public class Lobby {
                 Player p = playerData.get(playerID);
                 Booklet b = new Booklet(playerID, maxRounds+1);
                 booklets.add(b);
+                p.submitted = false;
                 p.currentBooklet = b;
             }
         }else if(roundNumber <= maxRounds){//in play state
             roundNumber++;
-            //TODO swap booklets
-                //dont swap on the first transition iff there are an even number of players
+            //dont swap on the first transition iff there are an even number of players
+            if(roundNumber == 1 && players.size() % 2 == 0){          
+                //Dont swap
+            }
+            else{//normal case
+                SwapBooklets();
+            }
             
             for (String playerID: players) {
                 playerData.get(playerID).submitted = false;
@@ -196,6 +203,21 @@ public class Lobby {
             
         }
         return roundNumber;
+    }
+    
+    /**
+     * Shifts all booklets by one player
+     */
+    public void SwapBooklets(){
+        Booklet temp = playerData.get(players.get(0)).currentBooklet;
+        for (int i = 0; i < players.size()-1; i++) {
+            Booklet current = playerData.get(players.get(i)).currentBooklet = 
+                    playerData.get(players.get(i+1)).currentBooklet;
+            current.setUser(players.get(i));
+        }
+        playerData.get(players.get(players.size()-1)).currentBooklet = temp;
+        playerData.get(players.get(players.size()-1)).currentBooklet.
+                setUser(players.get(players.size()-1));
     }
     
     /**

@@ -114,10 +114,10 @@ public class LobbyTest {
         assertEquals(test.getPlayers().size(), 2);
          
         //EQ:3 - A player trys to join when it is full 
-        ////////////////////////////
-        //TBD test when it is full//
-//        fail("need to code before testing");
-        ////////////////////////////
+        
+        //TBD
+        
+        
     }
     
     @Test
@@ -221,13 +221,6 @@ public class LobbyTest {
             method.invoke(test);
             assertEquals(1, test.getRoundNumber());
             assertEquals(test.getPlayerData("admin").submitted, false);
-            ///////////////////////////////////////
-            //TBD need to implement swap booklets//
-//            fail("need to code before testing");
-            ///////////////////////////////////////
-            
-            
-            
             //EQ:2 - the lobby is in progress and the last turn of the game
             test = new Lobby(0);
             test.Checkout("admin", "admin");
@@ -258,14 +251,19 @@ public class LobbyTest {
             assertEquals(test.getPlayerData("admin").submitted, false);
         } catch (NoSuchMethodException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         } catch (SecurityException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         } catch (IllegalAccessException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         } catch (IllegalArgumentException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         } catch (InvocationTargetException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         }
     }
     
@@ -284,4 +282,45 @@ public class LobbyTest {
         
     }
     
+    @Test
+    public void TestSwapBooklets(){
+        try {
+            Lobby test;// = new Lobby(0);
+            Method method = Lobby.class.getDeclaredMethod("SwapBooklets");
+//            method.setAccessible(true);
+            
+            test = new Lobby(0);
+            test.Checkout("admin", "admin");
+            test.JoinPlayer("p1", "n1", null);
+            test.StartGame();
+            test.SwapBooklets();
+//            method.invoke(test);
+            
+            assertEquals("p1", test.getPlayerData("p1").currentBooklet.getUser());
+            assertEquals("admin", test.getPlayerData("p1").currentBooklet.getOwner());
+            
+            assertEquals("admin", test.getPlayerData("admin").currentBooklet.getUser());
+            assertEquals("p1", test.getPlayerData("admin").currentBooklet.getOwner());
+            
+            
+            
+            
+        } catch (NoSuchMethodException ex) {
+            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        } catch (SecurityException ex) {
+            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+//        } catch (IllegalAccessException ex) {
+//            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+//            fail();
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        }
+//        } catch (InvocationTargetException ex) {
+//            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+//            fail();
+//        }
+    }
 }

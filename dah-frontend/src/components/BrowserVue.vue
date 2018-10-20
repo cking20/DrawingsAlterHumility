@@ -1,8 +1,8 @@
 <template>
   <div id="browser-vue">
     <H1>Current Lobbies</H1>
-    <p v-if="datastore.state.knownLobbies.length == 0">There are no Lobbies yet. Start the fun.</p>
-    <button class="submit" v-on:click="datastore.createNewLobby()">Create Lobby</button>
+    <p v-if="datastore.state.knownLobbies.length == 0">There are no Lobbies yet. Start the fun, by creating one!</p>
+    <button class="submit" v-on:click="datastore.triggerLoadingScreen();datastore.createNewLobby()">Create Lobby</button>
     <div>
       <!-- <button v-on:click="datastore.getAvailableLobbies()">Refresh Lobbies</button> -->
     </div>
@@ -36,6 +36,8 @@ export default {
   mounted: function(){
   },
   created: function(){
+    this.datastore.triggerLoadingScreen();
+    this.refreshState();
     this.refresher = setInterval(this.refreshState,5000);
   },
   beforeDestroy: function(){

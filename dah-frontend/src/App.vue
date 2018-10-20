@@ -1,7 +1,9 @@
 <template>
   <div id="app">
-
-    <div class="center">
+    <div v-if="datastore.state.mustRefresh">
+      <Loader></Loader>
+    </div>
+    <div :class="{hidden: datastore.state.mustRefresh, center: true}">
       <component v-bind:is="datastore.state.currentVue"> </component>
     </div>
     
@@ -35,6 +37,7 @@
   import socialConnector from './socialConnector.js'
   import store from './store.js'
   import LandingVue from './components/LandingVue.vue'
+  import Loader from './components/Loader.vue'
   import BrowserVue from './components/BrowserVue.vue'
   import DrawVue from './components/Draw.vue'
   import LobbyVue from './components/LobbyVue.vue'
@@ -47,7 +50,8 @@ export default {
     DrawVue,
     LobbyVue,
     BrowserVue,
-    LandingVue 
+    LandingVue,
+    Loader 
   },
   data: function() {
     return {
@@ -90,13 +94,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #ffffff;
-  margin-top: 60px;
+  margin-top: 0px;
 }
-@media only screen and (max-width: 600px) {
-    #app {
-        margin-top: 0px;
-    }
-}
+
 
 body{
   background-color: #252525;
@@ -186,7 +186,7 @@ a {
   width: 50%;
   padding: 10px;
 }
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 700px) {
     .center {
         width: 100%;
         padding: 0px;
@@ -200,6 +200,9 @@ a {
   padding: 12px 20px;
   margin: 8px 0;
 }
+.hidden{
+  display: none;
+}
 
 .card{
   padding: 0;
@@ -208,7 +211,7 @@ a {
   background-color: #acacac;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 1), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 700px) {
     .card {
         margin: 0px;
     }

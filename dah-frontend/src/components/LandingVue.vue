@@ -45,7 +45,10 @@ export default {
 </script>
 
 <style lang="scss">
-h1{
-  font-size: 50px;
+#landing-vue{
+  h1{
+    margin-top: 25%;
+    font-size: 50px;
+  }
 }
 </style>

@@ -1,6 +1,6 @@
 const store = {
-	// host: 'http://localhost:4567/game',
-	host: 'https://drawings-alter-humility.herokuapp.com/game',
+	host: 'http://localhost:4567/game',
+	// host: 'https://drawings-alter-humility.herokuapp.com/game',
 	state:{
 		currentVue: 'LandingVue',
 		tempImageData:null,
@@ -8,6 +8,10 @@ const store = {
 		myData:{},
 		myLobby:null,
 		knownLobbies:[],
+		mustRefresh: false,
+	},
+	triggerLoadingScreen: function(){
+		this.state.mustRefresh =true;
 	},
 	testImage: function(dataURL, callbackFunction){
 		//help found from https://stackoverflow.com/questions/19032406/convert-html5-canvas-into-file-to-be-uploaded
@@ -39,6 +43,17 @@ const store = {
 	loadImage: function(callbackFunction){
 		var data;
 		hitImage('GET', this.host + '/images'+ this.getLastContentOfMyBooklet(), function(xhttp){
+			// console.log(xhttp.responseText);
+			// var dataURL="data:image/png;base64,"+xhttp.responseText;
+			var arr = new Uint8Array(xhttp.response);
+			var raw = String.fromCharCode.apply(null,arr);
+			var dataURL=btoa(raw);
+			callbackFunction("data:image/png;base64,"+(dataURL));
+		});
+	},
+	loadSpecificImage: function(url, callbackFunction){
+		var data;
+		hitImage('GET', this.host + '/images'+ url, function(xhttp, element){
 			// console.log(xhttp.responseText);
 			// var dataURL="data:image/png;base64,"+xhttp.responseText;
 			var arr = new Uint8Array(xhttp.response);
@@ -82,8 +97,10 @@ const store = {
 	refreshMyLobbyData: function(){
 		hit('GET', this.host + '/me/lobby', function(xhttp){
 			store.state.myLobby = JSON.parse(xhttp.responseText);
+			store.state.mustRefresh = false;
 		}, function(xhttp){
 			store.state.myLobby = null;
+			//error
 		});
 		vueStateTransition();
 	},
@@ -91,6 +108,7 @@ const store = {
 	getAvailableLobbies: function(){
 		hit('GET', this.host + '/lobbies', function(xhttp){
 			store.state.knownLobbies = JSON.parse(xhttp.responseText);
+			store.state.mustRefresh = false;
 		});
 		vueStateTransition();
 	},
@@ -112,6 +130,7 @@ const store = {
 	joinLobby: function(lobbyID){
 		hit('POST', this.host + '/lobbies/'+ lobbyID + '/join', function(xhttp){
 			store.state.myLobby = JSON.parse(xhttp.responseText);
+			store.state.mustRefresh = false;
 		});
 		vueStateTransition();
 	},
@@ -130,6 +149,7 @@ const store = {
 		console.log(JSON.stringify(lobbySettings));
 		post(this.host + '/lobbies/'+lobbySettings.id, JSON.stringify(lobbySettings), function(xhttp){
 			store.state.myLobby = JSON.parse(xhttp.responseText);
+			store.state.mustRefresh = false;
 		});
 	},
 	createNewLobby: function(){
@@ -144,12 +164,14 @@ const store = {
 	beginGame: function(){
 		hit('POST', this.host + '/lobbies/'+store.state.myLobby.id+'/begin', function(xhttp){
 			// store.state.myLobby = JSON.parse(xhttp.responseText);
+			store.state.mustRefresh = false;
 		});
 		vueStateTransition();
 	},
 	getPrompts: function(){
 		hit('GET', this.host + '/prompts', function(xhttp){
 			store.state.prompts = JSON.parse(xhttp.responseText);
+			store.state.mustRefresh = false;
 		});
 	},
 	getLastContentOfMyBooklet: function(){
@@ -218,7 +240,6 @@ function hitImage(method, path, callbackFunction){
 		xhttp.send();
 
 }
-
 //This should change to auto detect the game state and hit the correct endpoint
 function post(path, data, callbackFunction){
 	var xhttp = new XMLHttpRequest();

@@ -1,7 +1,7 @@
 <template>
 	<div class = pregame-vue>
 		<H1>Lobby {{datastore.getMyLobbyData().name}}</H1>
-		<button class="cancel" v-on:click="datastore.leaveLobby()">Leave Lobby</button>
+		<button class="cancel" v-on:click="datastore.triggerLoadingScreen();datastore.leaveLobby()">Leave Lobby</button>
 		<div v-if="isAdmin()" class="center horizontal card">
 			<AdminPanel></AdminPanel>
 		</div>

@@ -39,6 +39,7 @@ export default{
 		
 	},
 	created: function(){
+		this.datastore.triggerLoadingScreen();
 		this.datastore.getPlayerData();
 	    this.refresher = setInterval(this.refreshState,5000);
 	},

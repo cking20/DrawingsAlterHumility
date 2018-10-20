@@ -1,7 +1,7 @@
 <template>
 	<div class = draw-vue>
-		<H1>Draw: {{this.dataStore.getLastContentOfMyBooklet()}}</H1>
 		<div v-if="!this.dataStore.getHaveISubmitted()">
+			<H1>Draw: {{this.dataStore.getLastContentOfMyBooklet()}}</H1>
 			<div>
 				<canvas class="drawing-area card" ref="theCanvas" width="300" height="300" style="width: 90%; height: 100%;"
 					@mousemove="mouseMove" 
@@ -18,37 +18,57 @@
 			</div>
 			<div class="drawing-toolbar">
 				<div class="slider">
-					<input  type="range" id="lineWidth" ref="lineWidth" min="1" max="50" value="2" v-on:change="updateLineWidth(); ">
+					<select  type="range" id="lineWidth" ref="lineWidth" min="1" max="50" value="2" v-on:change="updateLineWidth(); ">
+						<option value=1>1px</option>
+						<option value=2>2px</option>
+						<option value=5>5px</option>
+						<option value=10>10px</option>
+						<option value=20>20px</option>
+						<option value=30>30px</option>
+						<option value=40>40px</option>
+						<option value=50>50px</option>
+						<option value=100>100px</option>
+					</select>
 				</div>
 				<ul>
-					<li><input class="tool" type="color" ref="color" value="#000000" id="color" v-on:change="updateColor()" style="background-color: black;"></li>
-					<li><input class="tool" type="button" value="Pen" id="pen" v-on:click="pen"></li>
-					<li><input class="tool" type="button" value="Erase" id="erase" v-on:click="color = backgroundColor"></li>
-					<li><input class="tool"
-						type="button" value="Save" id="save"  v-on:click="saveImage()"></li>
-					<li><input class="tool" 
-						type="button" value="Load" id="load"  v-on:click="loadImage()"></li>
-					<li><input class="tool cancel" type="button" value="Clear" id="clear"  v-on:click="eraseImage()"></li>
-					
-					<li><input class="tool" 
-						type="button" value="Bg" id="background" v-on:click="showBackGroundSelect = !showBackGroundSelect">
-						<input v-if="showBackGroundSelect" class="tool theme-selector" type="color" ref="bgColor" value="#000000" id="bgColor" v-on:change="fillBackground()">
+					<li><button class="tool" v-on:click="openColorModal">Color</button></li>
+					<li><button class="tool" value="Pen" id="pen" v-on:click="pen">Pen</button></li>
+					<li><button class="tool" type="button" value="Erase" id="erase" v-on:click="color = backgroundColor">Erase</button></li>
+					<li><button class="tool"
+						type="button" value="Save" id="save"  v-on:click="saveImage()">Save</button></li>
+					<li><button class="tool" 
+						type="button" value="Load" id="load"  v-on:click="loadImage()">Load</button></li>
+					<li><button class="cancel" type="button" value="Clear" id="clear"  v-on:click="eraseImage()">Clear</button></li>
+					<li><button class="cancel" type="button" value="Undo" id="undo"  v-on:click="loadLast()">Undo</button></li>
+					<li><button class="tool" 
+						type="button" value="Bg" id="background" v-on:click="showBGModal = !showBGModal">Bg</button>
 					</li>
 				</ul>
-				<input class="submit" type="button" value="Submit" id="submit" v-on:click="submit">
+				<button class="submit" value="Submit" id="submit" v-on:click="submit">Submit</button>
 				
 					
 			</div>
-			<div class="">
+			<div class="hidden">
 				<ul class="history">
 					<li v-for="(undo, index) in undos" v-if="index < 4"><img class="card" width="20%" :ref="'undos'+index" :src="undo" @click="loadLast()"></li>		
 				</ul>
 			</div>
 			
+			<div class="modal" v-if="this.showBGModal" ref="bgModal">
+			    <div class="modal-content">
+			    <input class="tool theme-selector" type="color" ref="bgColor" value="#000000" id="bgColor" v-on:change="fillBackground()">
+			    </div>
+			</div>
+			<div class="modal" v-if="this.showColorModal" ref="colorModal">
+			    <div class="modal-content">
+			    <input class="tool" type="color" ref="color" value="#000000" id="color" v-on:change="updateColor()" style="background-color: black;">
+			    </div>
+			</div>
+			
 			<img id="saveImg" ref="saveImg" width="160px" height="160px" style="display: none">
 		</div>
 		<div v-else>
-			<PlayerStstus></PlayerStstus>
+			<PlayersStatus></PlayersStatus>
 		</div>	
 	</div>
 </template>
@@ -56,12 +76,14 @@
 <script>
 	import store from '../store.js'
 	import PlayersStatus from './PlayersStatus.vue'
+	import Modal from './Modal.vue'
 export default{
 	name: 'DrawVue',
 	props:{
 	},
 	components:{
-		PlayersStatus
+		PlayersStatus,
+		Modal
 	},
 	data: function() {
 		return {
@@ -77,12 +99,15 @@ export default{
 			curX: 0,
 			prevY: 0,
 			curY: 0,
+			savedColor: '#000000',
 			color: '#000000',
 			backgroundColor: '#e6e6e6',
 			startFlag: false,
 			lineWidth: 2,
 			undos:[],
-			touch: null
+			touch: null,
+			showColorModal: false,
+			showBGModal: false
 		}
 	},
 	mounted: function(){
@@ -95,6 +120,8 @@ export default{
 		this.context.fillRect(0,0,this.w, this.h);
 	},
 	created(){
+		this.dataStore.triggerLoadingScreen();
+		this.dataStore.refreshMyLobbyData();
 		Event.$on('color-selected', (colour)=>{
 			this.$refs['color'].value = colour;
 			this.updateColor();
@@ -107,6 +134,10 @@ export default{
 		
 	},
 	methods:{
+		openColorModal: function(){
+			console.log("wtf");
+			this.showColorModal = true;
+		},
 		loadLast: function(){
 			//todo
 			console.log(this.$refs)
@@ -117,7 +148,9 @@ export default{
 		},
 		updateColor: function(){
 			this.color = this.$refs['color'].value;
+			this.savedColor = this.color;
 			this.$refs['color'].style.backgroundColor = this.color;
+			this.showColorModal = false;
 		},
 		updateTheme: function(theme){
 			console.log("themed");
@@ -137,7 +170,7 @@ export default{
 			this.context.closePath();
 		},
 		pen: function(){
-			this.color = this.$refs['color'].value;
+			this.color = this.savedColor;
 		},
 		fillBackground: function(){
 			var color = this.$refs['bgColor'].value;
@@ -168,6 +201,7 @@ export default{
 
 			//lastly
 			this.backgroundColor = color;
+			this.showBGModal = false;
 		},
 		
 		drawCap: function(){
@@ -264,8 +298,6 @@ export default{
 				this.draw();
 			}
 		},
-
-
 		addToUndos: function(){
 			this.undos.splice(0,0,this.canvas.toDataURL());
 			var maxUndos = 10;
@@ -273,6 +305,7 @@ export default{
 		},
 		submit: function(){
 			if(confirm("Did you finish???")){
+				this.dataStore.triggerLoadingScreen();
 				this.dataStore.submitImage(this.canvas.toDataURL(), function(){
 					//callback
 					console.log('SUBMITED');
@@ -280,20 +313,20 @@ export default{
 				
 			}
 		}
+
 	}
 }
 </script>
 <style lang="scss">
-input[type=button]{
+.tool{
 	border: 0;
-	color: white;
+	background-color: lightgrey;
+	color: black;
 	text-decoration: none;
 	-webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
 }
-input[type=range]{
-	padding: 0;
-}
+
 ul{
 	margin: 0;
 }
@@ -303,5 +336,24 @@ h1{
 li{
 	margin-left: 0;
     margin-right: 0;
+}
+
+.modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+    background-color: lightgrey;
+    margin: 40% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
 }
 </style>

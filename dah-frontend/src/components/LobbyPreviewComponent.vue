@@ -1,11 +1,11 @@
 <template>
 	<div class="lobby-preview">
-		<div>
+		<div class="card">
 			<h3>{{this.lobby.name}}</h3>
 			<p>Admin: {{this.lobby.adminUuid}}</p>
 			<p>In Progress: {{this.lobby.isInProgress}}</p>
 			<p>Players: {{this.numPlayers}}/{{this.lobby.maxPlayers}}</p>
-			<button v-if="this.numPlayers < this.lobby.maxPlayers" v-on:click="join()">Join</button>
+			<button v-if="this.numPlayers < this.lobby.maxPlayers" v-on:click="join()" class="submit">Join</button>
 		</div>	
 	</div>
 </template>

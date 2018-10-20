@@ -42,10 +42,12 @@ export default {
   },
   methods:{
     updateSettings: function(){
+      this.datastore.triggerLoadingScreen();
       this.datastore.updateLobbySettings(this.tempLobbyDataCopy);
       //todo
     },
     start: function(){
+      this.datastore.triggerLoadingScreen();
       this.datastore.beginGame();
     }
   }

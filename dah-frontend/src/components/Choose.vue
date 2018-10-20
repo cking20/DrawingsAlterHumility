@@ -50,12 +50,15 @@ export default{
 		
 	},
 	created: function(){
+		this.datastore.refreshMyLobbyData();
+		this.datastore.triggerLoadingScreen();
 		this.datastore.getPrompts();		
 	},
 	beforeDestroy: function(){
 	},
 	methods:{
     	submit: function(){
+    		this.datastore.triggerLoadingScreen();
     		this.datastore.submitGuess(this.selected);
     	},
     	select: function(item){

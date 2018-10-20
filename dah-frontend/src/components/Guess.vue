@@ -42,6 +42,8 @@ export default{
 		this.imgRef = this.$refs['testImage']; 
 	},
 	created: function(){
+		this.datastore.triggerLoadingScreen();
+		this.datastore.refreshMyLobbyData();
 		this.loadImage();
 	},
 	beforeDestroy: function(){
@@ -53,8 +55,11 @@ export default{
 	      }); 
 	    },
 	    submit: function(){
-	    	if(this.guess != null)
+	    	if(this.guess != null){
+	    		this.datastore.triggerLoadingScreen();
     			this.datastore.submitGuess(this.guess);
+
+	    	}
     	},
 	}
 }
