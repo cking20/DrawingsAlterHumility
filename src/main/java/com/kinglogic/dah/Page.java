@@ -37,13 +37,14 @@ public class Page {
         this.creator = creator;
         id = idCounter++;
         this.content = content;
+        this.votes = new ArrayList<>();
     }
     
     private Page(){
         id = -1;
         creator = null;
         content = null;
-        votes = null;
+        votes = new ArrayList<>();
         isImage = false;
     }
     
@@ -54,10 +55,13 @@ public class Page {
      * @return true iff the session has just voted on the page
      */
     public boolean Vote(String session){
-        if(getVotes().contains(session)){
+        if(votes == null)
+            votes = new ArrayList<>();
+        if(votes.contains(session)){
             return false;
         }
-        getVotes().add(session);
+        votes.add(session);
+        System.out.println("added");
         return true;
     }
 

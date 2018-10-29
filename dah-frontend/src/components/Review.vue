@@ -1,29 +1,67 @@
 <template>
 	<div class = review-vue>
-		
-		<H1>Review Vue</H1>
-		<ul>
-			<li v-for="booklet in datastore.state.myLobby.booklets">
-				<Booklet v-bind:bookletData="booklet"></Booklet>
-			</li>
-		</ul>
-	
+		<div v-if="datastore.state.reviewingBooklet >= datastore.state.myLobby.booklets.length">
+			<h1>Results</h1>
+			<div class="card">
+				<ul>
+					<li v-for="(player, index) in results">
+						<div class="row" :class="{winner: index==0}">
+							<p class="leaderboard-name">{{player.name}}</p>
+							<p class="leaderboard-result">{{player.votes}}/{{maxVotes}} upvotes!</p>
+						</div>
+					</li>
+				</ul>
+				<ul>
+					<li v-for="(booklet, index) in datastore.state.myLobby.booklets">
+						<Downloader :bookletData="booklet"></Downloader>	
+					</li>
+				</ul>
+			
+			</div>
+
+		</div>
+		<div v-else>
+			<H1>Vote</H1>
+			<ul>
+				<li v-for="(booklet, index) in datastore.state.myLobby.booklets">
+					<Booklet v-if="index == datastore.state.reviewingBooklet" v-bind:bookletData="booklet"></Booklet>
+				</li>
+			</ul>
+		</div>
 	</div>
 </template>
 
 <script>
 import store from '../store.js'
 import Booklet from './Booklet.vue'
+import Downloader from './Downloader.vue'
 export default{
 	name: 'Review',
 	props:{
 	},
 	components:{
-		Booklet
+		Booklet,
+		Downloader
 	},
 	data: function() {
 		return {
 			datastore: store.store
+		}
+	},
+	computed:{
+		results: function(){
+			var resultArray = new Array();
+			for (var i = 0; i < this.datastore.state.myLobby.players.length; i++) {
+				var voteData = new Object();
+				voteData.name = this.datastore.state.myLobby.playerData[this.datastore.state.myLobby.players[i]].name;
+				voteData.votes = this.datastore.state.myLobby.playerData[this.datastore.state.myLobby.players[i]].votes;
+				resultArray.push(voteData);
+			}
+			return resultArray.sort(
+				function(a,b){return b.votes - a.votes});
+		},
+		maxVotes: function(){
+			return this.datastore.state.myLobby.players.length * this.datastore.state.myLobby.players.length * this.datastore.state.myLobby.maxRounds;
 		}
 	},
 	mounted: function(){
@@ -34,7 +72,14 @@ export default{
 	beforeDestroy: function(){
 	},
 	methods:{	
-		
+
 	}
 }
 </script>
+<style lang="scss">
+
+	.winner{
+		color: green;
+		font-size: 1.5em;
+	}
+</style>

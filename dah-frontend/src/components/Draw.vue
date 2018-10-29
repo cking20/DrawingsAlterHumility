@@ -2,8 +2,44 @@
 	<div class = draw-vue>
 		<div v-if="!this.dataStore.getHaveISubmitted()">
 			<H1>Draw: {{this.dataStore.getLastContentOfMyBooklet()}}</H1>
+			<div class="drawing-toolbar vertical">
+				<ul>
+					<li><div class="selector">
+						<select  class="grey tool" id="lineWidth" ref="lineWidth" min="1" max="50" value="2" v-on:change="updateLineWidth(); " alt="Pen Size">
+							<option value=1>1px</option>
+							<option value=2>2px</option>
+							<option value=5>5px</option>
+							<option value=10>10px</option>
+							<option value=20>20px</option>
+							<option value=30>30px</option>
+							<option value=40>40px</option>
+							<option value=50>50px</option>
+							<option value=100>100px</option>
+						</select>
+					</div></li>
+					<li><button class="grey tool" v-on:click="openColorModal">
+						<img src="../assets/drop-silhouette.png" alt="Pen Color">
+					</button></li>
+					<li><button class="grey tool" value="Pen" id="pen" v-on:click="pen">
+						<img src="../assets/pencil-edit-button.png" alt="Pen"></button></li>
+					<li><button class="grey tool" type="button" value="Erase" id="erase" v-on:click="color = backgroundColor"><img src="../assets/eraser.png" alt="Eraser"></button></li>
+					<!-- <li><button class="tool"
+						type="button" value="Save" id="save"  v-on:click="saveImage()">Save</button></li>
+					<li><button class="tool" 
+						type="button" value="Load" id="load"  v-on:click="loadImage()">Load</button></li> -->
+					<li><button class="grey tool" type="button" value="Bg" id="background" v-on:click="showBGModal = !showBGModal"><img src="../assets/paint-bucket.png" alt="Background Color"></button></li>
+					<li><button class="cancel tool" type="button" value="Undo" id="undo"  v-on:click="loadLast()"><img src="../assets/undo-arrow.png" alt="Undo"></button></li>
+					<li><button class="cancel tool" type="button" value="Clear" id="clear"  v-on:click="eraseImage()"><img src="../assets/clear-button.png" alt="Clear"></button></li>
+					<li>
+						<button class="grey tool">
+						<a style="width: 16px;" class="download" :href="canvasURL()" download="drawing.png"><img src="../assets/download.png" alt="Download"></a>
+						</button>
+					</li>
+					
+				</ul>
+			</div>
 			<div>
-				<canvas class="drawing-area card" ref="theCanvas" width="300" height="300" style="width: 90%; height: 100%;"
+				<canvas class="drawing-area card" ref="theCanvas" width="300" height="300" style="width: 80%;"
 					@mousemove="mouseMove" 
 					@mousedown="mouseDown" 
 					@mouseup="mouseUp" 
@@ -15,39 +51,10 @@
 
 					>Your Browser does not support Fun things		
 					</canvas>
-			</div>
-			<div class="drawing-toolbar">
-				<div class="slider">
-					<select  type="range" id="lineWidth" ref="lineWidth" min="1" max="50" value="2" v-on:change="updateLineWidth(); ">
-						<option value=1>1px</option>
-						<option value=2>2px</option>
-						<option value=5>5px</option>
-						<option value=10>10px</option>
-						<option value=20>20px</option>
-						<option value=30>30px</option>
-						<option value=40>40px</option>
-						<option value=50>50px</option>
-						<option value=100>100px</option>
-					</select>
-				</div>
-				<ul>
-					<li><button class="tool" v-on:click="openColorModal">Color</button></li>
-					<li><button class="tool" value="Pen" id="pen" v-on:click="pen">Pen</button></li>
-					<li><button class="tool" type="button" value="Erase" id="erase" v-on:click="color = backgroundColor">Erase</button></li>
-					<li><button class="tool"
-						type="button" value="Save" id="save"  v-on:click="saveImage()">Save</button></li>
-					<li><button class="tool" 
-						type="button" value="Load" id="load"  v-on:click="loadImage()">Load</button></li>
-					<li><button class="cancel" type="button" value="Clear" id="clear"  v-on:click="eraseImage()">Clear</button></li>
-					<li><button class="cancel" type="button" value="Undo" id="undo"  v-on:click="loadLast()">Undo</button></li>
-					<li><button class="tool" 
-						type="button" value="Bg" id="background" v-on:click="showBGModal = !showBGModal">Bg</button>
-					</li>
-				</ul>
-				<button class="submit" value="Submit" id="submit" v-on:click="submit">Submit</button>
-				
 					
 			</div>
+			
+			<button class="submit" value="Submit" id="submit" v-on:click="submit">Submit</button>
 			<div class="hidden">
 				<ul class="history">
 					<li v-for="(undo, index) in undos" v-if="index < 4"><img class="card" width="20%" :ref="'undos'+index" :src="undo" @click="loadLast()"></li>		
@@ -56,12 +63,14 @@
 			
 			<div class="modal" v-if="this.showBGModal" ref="bgModal">
 			    <div class="modal-content">
-			    <input class="tool theme-selector" type="color" ref="bgColor" value="#000000" id="bgColor" v-on:change="fillBackground()">
+			    	<button class="cancel exit" @click="closeModals()">&#x2716</button>
+			    	<input class="tool theme-selector" type="color" ref="bgColor" :value="this.backgroundColor" id="bgColor" v-on:change="fillBackground()">
 			    </div>
 			</div>
 			<div class="modal" v-if="this.showColorModal" ref="colorModal">
 			    <div class="modal-content">
-			    <input class="tool" type="color" ref="color" value="#000000" id="color" v-on:change="updateColor()" style="background-color: black;">
+			    	<button class="cancel exit" @click="closeModals()">&#x2716</button>
+			    	<input class="tool" type="color" ref="color" :value="this.color" id="color" v-on:change="updateColor()" style="background-color: black;">
 			    </div>
 			</div>
 			
@@ -110,6 +119,9 @@ export default{
 			showBGModal: false
 		}
 	},
+	computed:{
+
+	},
 	mounted: function(){
 		this.canvas = this.$refs['theCanvas']; 
 		this.context = this.canvas.getContext('2d');
@@ -138,6 +150,10 @@ export default{
 			console.log("wtf");
 			this.showColorModal = true;
 		},
+		closeModals:function(){
+			this.showColorModal = false;
+			this.showBGModal = false;
+		},
 		loadLast: function(){
 			//todo
 			console.log(this.$refs)
@@ -145,6 +161,13 @@ export default{
 			var img = this.$refs["undos0"][0];
 			this.context.drawImage(img,0,0);
 			this.undos.shift();
+		},
+		canvasURL: function(){
+			//cant create the image when the page is loading, thus must return 0
+			if(this.canvas == null)
+				return 0;
+			else
+				return this.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
 		},
 		updateColor: function(){
 			this.color = this.$refs['color'].value;
@@ -220,6 +243,7 @@ export default{
 			this.context.strokeStyle = this.backgroundColor; 
 			this.context.fillRect(0,0,this.w, this.h); 
 			this.context.strokeStyle = this.color;
+			this.backgroundColor = '#e6e6e6';
 		},
 		loadImage: function(){
 			this.context.clearRect(0, 0, this.w, this.h);
@@ -318,13 +342,32 @@ export default{
 }
 </script>
 <style lang="scss">
-.tool{
-	border: 0;
+.drawing-area{
+	float: left;
+	cursor: crosshair;
+}
+.grey{
 	background-color: lightgrey;
 	color: black;
+}
+.tool{
+	border: 0;
 	text-decoration: none;
 	-webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
+    width: 100%;
+    overflow: hidden;
+}
+.drawing-toolbar{
+	float: left;
+}
+.vertical{
+	width: 10%;
+	ul{
+		li{
+			display: block;
+		}
+	}
 }
 
 ul{
@@ -351,9 +394,29 @@ li{
 }
 .modal-content {
     background-color: lightgrey;
-    margin: 40% auto;
+    margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
+    width: 40%; /* Could be more or less, depending on screen size */
+    height: 60%;
+}
+.exit{
+	width:95%;
+}
+input[type="color"] {
+	-webkit-appearance: none;
+	border: none;
+	width: 95%;
+	height: 82%;
+}
+.selector{
+
+}
+select {
+	padding: 12px 0;
+	width: 100%;
+	height: 200%;
+	border-radius: 5px;
+	margin: 8px 0;
 }
 </style>

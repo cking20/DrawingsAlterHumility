@@ -2,8 +2,10 @@
   <div id="player-panel" class="panel">
     <H2>Player List</H2>
     <ul>
-      <li v-for="player in datastore.state.myLobby.playerData">
-        <p>{{player.name}}</p>
+      <li class="row" v-for="player in datastore.state.myLobby.playerData">
+        <div>
+          <p>{{player.name}}</p>
+        </div>
       </li>
     </ul>
   </div>
@@ -34,6 +36,10 @@ export default {
 </script>
 
 <style lang="scss">
+.playername{
+  display: inline-block;
+  width: 100%;
+}
 li p{
   text-align: left;
 }

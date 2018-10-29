@@ -181,10 +181,13 @@ public class GameManager {
      */
     public void UpdatePlayerName(Session playerSession){
         if(playerSession.attribute("CURRENT_GAME") != null && playerSession.attribute("NAME") != null){
+            
             int lobby_id = playerSession.attribute("CURRENT_GAME");
             if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
-                lobbies[lobby_id].updatePlayerName(playerSession.id(), playerSession.attribute("NAME"));
-                
+                String name = playerSession.attribute("NAME");
+                name = name.trim();
+                if(name.compareTo("") != 0)
+                    lobbies[lobby_id].updatePlayerName(playerSession.id(), name);       
             }
         }
     }
@@ -289,6 +292,18 @@ public class GameManager {
              return path;
          }
          return null;
+    }
+    
+    public boolean voteOn(String player, int gameID, String whosBooklet, int round){
+        Lobby lobbyToVoteOn = lobbies[gameID];
+        if(lobbyToVoteOn == null)
+            return false;
+        return lobbyToVoteOn.vote(player, whosBooklet, round);
+        
+//        Player data = current.getPlayerData(player);
+//        if(data == null)
+//            return false;
+        
     }
 
     

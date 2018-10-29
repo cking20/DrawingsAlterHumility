@@ -452,6 +452,9 @@ public class ServerApp {
                         map = (HashMap<String,Object>) gson.fromJson(request.body(), map.getClass());
                         if(map != null && map.containsKey("name")){
                             String name = (String) map.get("name");
+                            name = name.trim();
+                            if(name.compareTo("") == 0)
+                                halt(400, name + " is not a valid name");
                             request.session(true).attribute("NAME", name);
                             if(request.session().attribute("CURRENT_GAME") != null){
                                 GameManager.getInstance().UpdatePlayerName(request.session());
@@ -484,6 +487,32 @@ public class ServerApp {
                 if(data == null)
                     halt(400);
                 return data;
+            });
+            
+            post("/vote", (request, response) -> {
+                
+                if(request.session().attribute("CURRENT_GAME") == null)
+                    halt(403);
+                String lobby = GameManager.getInstance().getLobby(request.session().attribute("CURRENT_GAME"));
+                if(lobby == null)
+                    halt(400);
+                if(request.body() != null){
+                    Gson gson = new Gson();
+                    HashMap<String,Object> map = new HashMap();
+                    try{
+                        map = (HashMap<String,Object>) gson.fromJson(request.body(), map.getClass());
+                        if(map != null && map.containsKey("booklet") && map.containsKey("round")){
+                            int currGame = request.session().attribute("CURRENT_GAME");
+                            String booklet = (String)map.get("booklet");
+                            int round = (int)Math.round((Double)map.get("round"));
+                            return GameManager.getInstance().voteOn(request.session().id(), currGame, booklet, round );
+                        }
+                    }catch(JsonSyntaxException js){
+                        halt(400, js.getMessage());
+                    
+                    }
+                }
+                return null;
             });
             
             configureSubmitEndpoints();

@@ -274,11 +274,23 @@ public class GameManagerTest {
         GameManager.getInstance().UpdatePlayerName(scaffold_player.session());
         System.out.println(GameManager.getInstance().getLobby(0));
         assertEquals(false, GameManager.getInstance().getLobby(0).contains("{\"name\""));
-        //EQ:1 - name is set
+        //EQ:1 - name is not valid
+        scaffold_player.session().attribute("NAME", " ");
+        GameManager.getInstance().UpdatePlayerName(scaffold_player.session());
+        System.out.println(GameManager.getInstance().getLobby(0));
+        assertEquals(false, GameManager.getInstance().getLobby(0).contains("\"name\":\" \""));
+        //EQ:2- name is null
+        scaffold_player.session().attribute("NAME", null);
+        GameManager.getInstance().UpdatePlayerName(scaffold_player.session());
+        System.out.println(GameManager.getInstance().getLobby(0));
+        assertEquals(false, GameManager.getInstance().getLobby(0).contains("\"name\":\"\""));
+        //EQ:3 - name is set
         scaffold_player.session().attribute("NAME", "Tester");
         GameManager.getInstance().UpdatePlayerName(scaffold_player.session());
         System.out.println(GameManager.getInstance().getLobby(0));
         assertEquals(true, GameManager.getInstance().getLobby(0).contains("\"name\":\"Tester\""));
+        
+        
     }
 
     /**

@@ -5,7 +5,8 @@
 			<h2 v-else>{{pageData.content}}</h2>
 		</div>
 		<p class="attribution">By {{datastore.state.myLobby.playerData[pageData.creator].name}}</p>
-		<button class="submit" style="width:50%;">+1</button>
+		<p>Votes: {{this.pageData.votes.length}}</p>
+		<button class="submit" style="width:50%;" @click="vote">+1</button>
 	</div>
 </template>
 
@@ -22,9 +23,18 @@ export default{
 	        	id: 0,
                 creator: "",
                 isImage: false,
-                content: ""
+                content: "",
+                votes: []
  			}
 	      }
+	    },
+	    bookletCreator:{
+	    	type: String,
+	    	required: true
+	    },
+	    index: {
+	      type: Number,
+	      required: true
 	    }
 	},
 	components:{
@@ -48,6 +58,8 @@ export default{
 	methods:{	
 		vote: function(){
 			//TODO hit vote with id param
+			console.log(this.pageData.creator+", "+ this.index);
+			this.datastore.vote(this.pageData.creator, this.index);
 		}
 	}
 }

@@ -6,8 +6,11 @@
     <div :class="{hidden: datastore.state.mustRefresh, center: true}">
       <component v-bind:is="datastore.state.currentVue"> </component>
     </div>
+    <div v-if="datastore.state.myData.name == null">
+      <Name></Name>
+    </div>
     
-
+    
     <!-- <h1>Test shared image</h1>
     <img id="testImage" ref="testImage"> -->
 
@@ -30,6 +33,9 @@
       Tweet
       </a>
     </div>
+    <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+    <div>Icons made by <a href="https://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+    <div>Icons made by <a href="https://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
   </div>
 </template>
 
@@ -41,6 +47,7 @@
   import BrowserVue from './components/BrowserVue.vue'
   import DrawVue from './components/Draw.vue'
   import LobbyVue from './components/LobbyVue.vue'
+  import Name from './components/Name.vue'
 
 export default {
   name: 'app',
@@ -51,7 +58,8 @@ export default {
     LobbyVue,
     BrowserVue,
     LandingVue,
-    Loader 
+    Loader,
+    Name 
   },
   data: function() {
     return {
@@ -104,36 +112,52 @@ body{
 }
 
 button{
-    border: 2px solid lightgrey;
-    border-radius: 4px;
-    width: 50%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    color: white;
-    background: none;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    -webkit-transition-duration: 0.4s; /* Safari */
-    transition-duration: 0.4s;
+  border: 2px solid lightgrey;
+  border-radius: 4px;
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  color: white;
+  background: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
 }
 button:hover{
   background-color: #acacac;
 }
 
 input{
-    text-align: center;
-    border: 2px solid white;
-    border-radius: 4px;
-    width: 50%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    box-sizing: border-box;
+  text-align: center;
+  border: 2px solid white;
+  border-radius: 4px;
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+
+.download{
+  overflow: hidden;
+  width: 100%;
+  color: white;
+  background: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+}
+.download:hover{
+  background-color: #acacac;
 }
 input:focus {
-    background-color: lightgrey;
-    border-color: lightgrey;
+  background-color: lightgrey;
+  border-color: lightgrey;
 }
 
 h1, h2 {
@@ -147,7 +171,7 @@ ul {
 
 li {
   display: inline-block;
-  margin: 0 10px;
+  margin: 0;
 }
 
 a {
@@ -187,10 +211,10 @@ a {
   padding: 10px;
 }
 @media only screen and (max-width: 700px) {
-    .center {
-        width: 100%;
-        padding: 0px;
-    }
+  .center {
+    width: 100%;
+    padding: 0px;
+  }
 }
 
 .panel{
@@ -203,6 +227,22 @@ a {
 .hidden{
   display: none;
 }
+.row{
+  display: block;
+  margin: auto;
+}
+.row p{
+  display: inline-block;
+}
+.leaderboard-name{
+  padding: 5%;
+  float:left;
+  text-align: left;    
+}
+.leaderboard-result{
+  padding: 5%;
+  text-align: right;
+}
 
 .card{
   padding: 0;
@@ -212,8 +252,8 @@ a {
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 1), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 @media only screen and (max-width: 700px) {
-    .card {
-        margin: 0px;
-    }
+  .card {
+    margin: 0px;
+  }
 }
 </style>

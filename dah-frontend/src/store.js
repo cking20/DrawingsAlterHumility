@@ -3,12 +3,14 @@ const store = {
 	// host: 'https://drawings-alter-humility.herokuapp.com/game',
 	state:{
 		currentVue: 'LandingVue',
+		reviewingBooklet: 0,
 		tempImageData:null,
 		prompts: null,
 		myData:{},
 		myLobby:null,
 		knownLobbies:[],
 		mustRefresh: false,
+
 	},
 	triggerLoadingScreen: function(){
 		this.state.mustRefresh =true;
@@ -127,6 +129,14 @@ const store = {
 		});
 		vueStateTransition();
 	},
+	vote: function(booklet, round){
+		var voteJSON = '{"booklet": "' + booklet + '",'+
+						'"round": '+ round+'}';
+		post(this.host + '/me/vote', voteJSON, function(xhttp){
+			//store.state.myData = JSON.parse(xhttp.responseText);
+		});
+		vueStateTransition();
+	},
 	joinLobby: function(lobbyID){
 		hit('POST', this.host + '/lobbies/'+ lobbyID + '/join', function(xhttp){
 			store.state.myLobby = JSON.parse(xhttp.responseText);
@@ -135,10 +145,12 @@ const store = {
 		vueStateTransition();
 	},
 	leaveLobby: function(){
+		store.state.mustRefresh = true;
 		hit('POST', this.host + '/lobbies/'+ store.state.myLobby.id + '/leave', function(xhttp){
 
-			// Vue.set(store.state.myLobby, null);
+			store.state.mustRefresh = false;
 			store.state.myLobby = null;
+			// Vue.set(store.state.myLobby, null);
 			// delete store.state.myLobby;
 			// console.log(store.state.myLobby);
 
@@ -182,11 +194,18 @@ const store = {
 	},
 	getHaveISubmitted:function(){
 		return store.state.myLobby.playerData[store.state.myData.id].submitted;
+	},
+	reviewNextBooklet:function(){
+		store.state.reviewingBooklet++;
+		console.log(store.state.reviewingBooklet);
 	}
 }
 
 function vueStateTransition(){
-	if(store.state.myData.name != null){
+	if(store.state.myData.name == null){
+		store.state.currentVue = 'LandingVue';
+	}
+	else if(store.state.myData.name != null){
 		store.state.currentVue = 'BrowserVue';
 	}
 	if(store.state.myLobby == null){

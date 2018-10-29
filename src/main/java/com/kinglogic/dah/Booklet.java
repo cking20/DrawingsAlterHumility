@@ -81,6 +81,12 @@ public class Booklet {
         return true;
     }
     
+    public boolean voteOn(String voterString, int round){
+        if(round < pages.length)
+            return pages[round].Vote(voterString);
+        return false;
+    }
+    
     
     
 }

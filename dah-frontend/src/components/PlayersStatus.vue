@@ -2,12 +2,9 @@
   <div id="player-status-panel" class="panel">
     <H2>Players' Statuses</H2>
     <ul>
-      <li v-for="player in datastore.state.myLobby.playerData">
-        <div v-if="player.submitted" class="submitted">
-          {{player.name}}
-        </div>
-        <div v-else class="playing">
-          {{player.name}}
+      <li class="row" v-for="player in datastore.state.myLobby.playerData">
+        <div :class="{submitted: player.submitted, playing: !player.submitted}">
+          <p>{{player.name}}</p>
         </div>
       </li>
     </ul>
@@ -39,6 +36,10 @@ export default {
 </script>
 
 <style lang="scss">
+.verticle{
+  display: block;
+  margin: auto;
+}
 .submitted{
   background-color: green;
 }

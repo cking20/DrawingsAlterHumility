@@ -7,7 +7,7 @@
       <!-- <button v-on:click="datastore.getAvailableLobbies()">Refresh Lobbies</button> -->
     </div>
     <ul>
-      <li v-for="lobby in datastore.state.knownLobbies">
+      <li class="lobbylist" v-for="lobby in datastore.state.knownLobbies">
         <!-- <button v-on:click="datastore.joinLobby(lobby.id)">Join {{lobby.id}}</button>
         {{JSON.stringify(lobby)}} -->
         <LobbyPreviewComponent v-bind:lobby="lobby"></LobbyPreviewComponent>
@@ -56,4 +56,7 @@ export default {
 </script>
 
 <style lang="scss">
+.lobbylist{
+  width: 100%;
+}
 </style>

@@ -396,6 +396,26 @@ public class Lobby {
         this.password = password;
     }
      
+    /**
+     * Allow a player to vote on a page in a booklet
+     * @param id the player voting
+     * @param votingOn the booklet's owner ID
+     * @param round the round to be voted on
+     * @return 
+     */
+    public boolean vote(String id, String votingOn, int round){
+        for (Booklet b : booklets) {
+            if(b.getOwner().compareTo(votingOn) == 0){
+                if(b.voteOn(id, round)){
+                    String playerVotedOn = b.getPages()[round].getCreator();
+                    playerData.get(playerVotedOn).votes++;
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
+    }
     
     public int getBookletIndex(Booklet b){
         return booklets.indexOf(b);
