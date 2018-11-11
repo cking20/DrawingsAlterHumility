@@ -27,15 +27,12 @@
 
     <div>
       <a class="twitter-share-button"
-      href="https://twitter.com/intent/tweet?text=
-      Hello%20world"
+      href="https://twitter.com/intent/tweet?text=Made%20on%20"
       data-size="large">
       Tweet
       </a>
     </div>
-    <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-    <div>Icons made by <a href="https://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-    <div>Icons made by <a href="https://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+    <a href="privacy.html">Privacy Policy </a><a href="about.html"> About</a>
   </div>
 </template>
 
@@ -74,23 +71,9 @@ export default {
     // this.imgRef = this.$refs['testImage']; 
   },
   created: function(){
-    this.refresher = setInterval(this.refreshState,5000);
+    // this.refresher = setInterval(this.refreshState,5000);
   },
-  methods:{
-    refreshState: function(){
-      //todo: only update the part that need updateing TBD when Vue Swither is built
-      // this.reloadImage();
-      // this.datastore.refreshMyLobbyData();
-      // this.datastore.getAvailableLobbies();
-    },
-    reloadImage: function () {
-      // this.imgRef.src = "";
-      // this.imgRef.src = this.datastore.host+'/images/testimage';
-      // this.datastore.refreshImage(function(url){
-      //   document.getElementById("testImage").src = url;
-      // }); 
-    }
-    
+  methods:{    
   }
 }
 </script>
@@ -207,14 +190,8 @@ a {
 
 .center{
   margin: auto;
-  width: 50%;
+  width: 75%;
   padding: 10px;
-}
-@media only screen and (max-width: 700px) {
-  .center {
-    width: 100%;
-    padding: 0px;
-  }
 }
 
 .panel{
@@ -251,9 +228,35 @@ a {
   background-color: #acacac;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 1), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-@media only screen and (max-width: 700px) {
+@media only screen and (min-width: 10em) and (max-width: 60em) {
+  h1{
+    font-size: 5em;
+  }
+  p{
+    font-size: 3em;
+  }
+  .center {
+    width: 100%;
+    padding: 0px;
+  }
   .card {
     margin: 0px;
+  }
+  input {
+    width: 100%;
+    font-size: 2em;
+  }
+  button{
+    width: 100%;
+    font-size: 2em;
+  }
+  #name-vue{
+    z-index: 1000;
+    position: fixed;
+    bottom: 2%;
+    left: 5%;
+    margin: auto;
+    width: 90%;
   }
 }
 </style>

@@ -156,7 +156,7 @@ public class GameManagerTest {
         
         GameManager.getInstance().ReleaseLobby(scaffold_admin.session());
         
-        //EQ:0 - Player tries to join checkedout lobby with password
+        //EQ:1 - Player tries to join checkedout lobby with password
         mock = new MockHttpServletRequest();
         scaffold_admin = RequestResponseFactory.create(mock);
         mock2 = new MockHttpServletRequest();
@@ -176,7 +176,7 @@ public class GameManagerTest {
         
         GameManager.getInstance().ReleaseLobby(scaffold_admin.session());
         
-        //EQ:0 - Player tries to join released lobby
+        //EQ:2 - Player tries to join released lobby
         mock = new MockHttpServletRequest();
         scaffold_admin = RequestResponseFactory.create(mock);
         mock2 = new MockHttpServletRequest();
@@ -302,16 +302,16 @@ public class GameManagerTest {
         MockHttpServletRequest mock = new MockHttpServletRequest();
         Request admin = RequestResponseFactory.create(mock);
         String name = "cool name";
-        int maxRounds = 72;
+        //int maxRounds = 72;
         int maxPlayers = 16;
         String password = "banana";
         
         GameManager.getInstance().CheckoutLobby(admin.session());
         
-        String result = GameManager.getInstance().UpdateLobbySettings(admin.session(), name, maxRounds, maxPlayers, password);
+        String result = GameManager.getInstance().UpdateLobbySettings(admin.session(), name, 0, maxPlayers, password);
         assertNotEquals(null, result);
         assertEquals(true, result.contains("cool name"));
-        assertEquals(true, result.contains("72"));
+        //assertEquals(true, result.contains("72"));
         assertEquals(true, result.contains("16"));
         assertEquals(true, result.contains("banana"));
         

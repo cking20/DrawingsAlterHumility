@@ -1,6 +1,7 @@
 <template>
 	<div class = pregame-vue>
-		<H1>Lobby {{datastore.getMyLobbyData().name}}</H1>
+		
+		<H2>Lobby {{datastore.getMyLobbyData().name}}</H2>
 		<button class="cancel" v-on:click="datastore.triggerLoadingScreen();datastore.leaveLobby()">Leave Lobby</button>
 		<div v-if="isAdmin()" class="center horizontal card">
 			<AdminPanel></AdminPanel>
@@ -8,6 +9,7 @@
 		<div v-bind:class="{ center: isAdmin(), horizontal: isAdmin(), card: true}">
 			<PlayerPanel ></PlayerPanel>
 		</div>
+		
 	</div>
 </template>
 
@@ -33,19 +35,16 @@ export default{
 	},
 	created: function(){
 		this.datastore.getPlayerData();
-	    this.refresher = setInterval(this.refreshState,5000);
+	    //this.refresher = setInterval(this.refreshState,5000);
 	},
 	beforeDestroy: function(){
 		clearTimeout(this.refresher);
 	},
 	methods:{	
-		refreshState: function(){
-	    	//todo: only update the part that need updateing TBD when Vue Swither is built
-	      	// this.reloadImage();
-	      	console.log("Lobby Refresh State");
-	      	this.datastore.refreshMyLobbyData();
-	      	// this.datastore.getAvailableLobbies();
-    	},
+		// refreshState: function(){
+	 //      	console.log("Lobby Refresh State");
+	 //      	this.datastore.refreshMyLobbyData();
+  //   	},
     	isAdmin: function(){
     		return this.datastore.state.myLobby.adminUuid == this.datastore.state.myData.id;
     	}
@@ -56,11 +55,20 @@ export default{
 .cancel{
 	width: 100%;
 }
+
 .horizontal{
 	width:45%;
 	display: inline-block;
 	overflow: hidden;
 	vertical-align: top;
+}
+@media only screen and (min-width: 20em) and (max-width: 60em) {
+	.horizontal{
+		width:100%;
+		display: inline-block;
+		overflow: hidden;
+		vertical-align: top;
+	}
 }
 
 </style>

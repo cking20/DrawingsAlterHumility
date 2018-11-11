@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import spark.Filter;
 import spark.Session;
@@ -26,9 +27,13 @@ import static spark.Spark.*;
  * @author chris
  */
 public class ServerApp {
-    
+    private static final String host = "http://drawings-alter-humility.herokuapp.com";
+//    private static final String host = "http://localhost:8080";
+//    private static final String host = "*";
+    private static Gson gson;
     
     public static void main(String[] args){
+        gson = new Gson();
         staticFileLocation("public");
         GameManager.getInstance();
         ResourceManager.getInstance();
@@ -39,7 +44,28 @@ public class ServerApp {
         
         
         
+        
 }
+    public static void configureTwitterUpload(){     
+        post("/share", (request,response) ->{
+       
+        request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+        try{
+            InputStream input = request.raw().getPart("uploaded_file").getInputStream();
+            String ret =  ResourceManager.getInstance().persistImage(input);
+            return ExternalAPIInterface.getInstance().UploadImageToTwitterUsing4J(ret);
+
+            
+            //return host+"/images/"+ret;
+        }
+        catch(IOException | ServletException e){
+            e.printStackTrace();
+            halt(500, "failed to share");
+        }
+       
+        return "";
+        });
+    }
     
     public static void configureRoutes(){
         path("/game", () -> {
@@ -47,7 +73,8 @@ public class ServerApp {
             before("/*", (request, response) -> {
                 response.type("application/json");
 //                response.header("Access-Control-Allow-Origin", "*");
-                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
+                response.header("Access-Control-Allow-Origin", host);
+//                response.header("Access-Control-Allow-Origin", "http://localhost:8080");
 //                response.header("Access-Control-Allow-Origin", "http://drawings-alter-humility.herokuapp.com");
                 
                 response.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
@@ -59,7 +86,6 @@ public class ServerApp {
 
             configurePlayerStatusEndpoints();
             configureLobbiesEndpoints();
-//            configureCurrentLobbyEndpoints();
             configureImagesEndpoints();
             configurePromptsEndpoints();
             
@@ -133,7 +159,7 @@ public class ServerApp {
                  * Update the settings of this lobby
                  */
                 post("", (request,response) ->{
-                    Gson gson = new Gson();
+                    //Gson gson = new Gson();
                     HashMap<String,Object> map = new HashMap();
                     if(request.body() != null){
                         try{
@@ -165,17 +191,33 @@ public class ServerApp {
                 before("/join", (request, response) -> {
                     if(request.session().attribute("CURRENT_GAME") != null)
                         halt(403, "you already have a game in your session");
-                    System.out.println(request.body());
-                    System.out.println(request.body());
+//                    System.out.println(request.body());
+//                    System.out.println(request.body());
                 });
                 post("/join", (request,response) ->{
-                    if( GameManager.getInstance().JoinLobby(
-                            request.session(), 
-                            Integer.parseInt(request.params(":lobby_id")),
-                            request.body()
-                    )){
-                        return GameManager.getInstance().getLobby(Integer.parseInt(request.params(":lobby_id")));
+                    if(request.body() != null){
+                        try{
+                            HashMap<String,Object> map = new HashMap();
+                            map = (HashMap<String,Object>) gson.fromJson(request.body(), map.getClass());
+                            if(map != null && map.containsKey("password")){
+                                String password = (String) map.get("password");
+                                if( GameManager.getInstance().JoinLobby(
+                                    request.session(), 
+                                    Integer.parseInt(request.params(":lobby_id")),
+                                    password
+                                )){
+                                    return GameManager.getInstance().getLobby(Integer.parseInt(request.params(":lobby_id")));
+                                }
+                                halt(403, "password not correct");
+                            }
+                            halt(403, "password field not present");
+                            
+                        }catch(JsonSyntaxException js){
+                            System.err.println(js.getMessage());
+                            halt(400, js.getMessage());
+                        }
                     }
+                    
                     response.status(403);
                     return "{\"message\": \"nope, stars. can't do it\"}";
                 });
@@ -201,6 +243,16 @@ public class ServerApp {
                     }
                     response.status(403);
                     return "{\"message\": \"nope, stars. can't leave\"}";
+                });
+                
+                /**
+                * Restart the lobby
+                */
+                post("/restart", (request,response) ->{
+                    String data = GameManager.getInstance().RestartLobby(request.session());
+                    if(data == null)
+                        halt(400);
+                    return data;
                 });
                 
                 
@@ -239,7 +291,7 @@ public class ServerApp {
                             
 //                    String fileName = ResourceManager.getInstance().saveImage(
 //                        lobby, booklet, page, input);
-                    System.out.println("saved to"+ fileName);
+//                    System.out.println("saved to"+ fileName);
                     return "{\"url\": \""+fileName+"\"}";
                 }catch(IOException e){
                     System.err.println(e);
@@ -282,14 +334,14 @@ public class ServerApp {
             if(request.body() != null){
                 if(request.session().attribute("CURRENT_GAME") != null){
                     try{
-                        Gson gson = new Gson();
+                        //Gson gson = new Gson();
                         HashMap<String,Object> map = new HashMap();
                         map = (HashMap<String,Object>) gson.fromJson(request.body(), map.getClass());
                         int currentGame = request.session().attribute("CURRENT_GAME");
                         String playerID = request.session().id();
                         if(map != null && map.containsKey("guess")){
                             String guess = (String) map.get("guess");
-                            System.out.println("submitting" + guess);
+//                            System.out.println("submitting" + guess);
                             if( GameManager.getInstance().SubmitGuess(
                                     playerID,
                                     currentGame,
@@ -308,66 +360,69 @@ public class ServerApp {
         });
     }
     
-    /**
-     * Set all current Game Endpoints, mainly to be used for accessing the sessions game data without knowing the ID
-     */
-    public static void configureCurrentLobbyEndpoints(){
-        path("/current", () -> {
-            //make sure the user is in a Lobby
-            before("", (request, response) -> {
-                if(request.session().attribute("CURRENT_GAME") == null)
-                    halt(403, "{\"message\": \"you're not in a game\"}");
-            });
-            /**
-             * Retrun the data of the game the session is currently in
-             */
-            get("", (request,response) ->{
-                    String data = GameManager.getInstance().getLobby(request.session().attribute("CURRENT_GAME"));
-                    if(data == null)
-                        halt(400);
-                    return data;
-                });
-        });
-    }
+//    /**
+//     * Set all current Game Endpoints, mainly to be used for accessing the sessions game data without knowing the ID
+//     */
+//    public static void configureCurrentLobbyEndpoints(){
+//        path("/current", () -> {
+//            //make sure the user is in a Lobby
+//            before("", (request, response) -> {
+//                if(request.session().attribute("CURRENT_GAME") == null)
+//                    halt(403, "{\"message\": \"you're not in a game\"}");
+//            });
+//            /**
+//             * Retrun the data of the game the session is currently in
+//             */
+//            get("", (request,response) ->{
+//                    String data = GameManager.getInstance().getLobby(request.session().attribute("CURRENT_GAME"));
+//                    if(data == null)
+//                        halt(400);
+//                    return data;
+//                });
+//            
+//        });
+//    }
     
     /**
      * Set all routes for image manipulation
      */
     public static void configureImagesEndpoints(){
         path("/images", () ->{
-            //testing stuff
-            get("/testimage", (request,response) ->{
-                response.type("image/png");
-                if(tempDir.listFiles().length > 0){
-                    byte[] data = null;
-                    try {
-                        data = Files.readAllBytes(tempDir.listFiles()[0].toPath());
-                    } catch (Exception e) {e.printStackTrace();}
-                    HttpServletResponse raw = response.raw();
-    //                response.header("Content-Disposition", "attachment; filename=image.jpg");
-                    response.type("image/png");
-                    if(data != null)
-                    try {
-                        raw.getOutputStream().write(data);
-                        raw.getOutputStream().flush();
-                        raw.getOutputStream().close();
-                    } catch (Exception e) {e.printStackTrace();}
-                    return raw;
-                }
-                return null;
-            });
-
-            post("/testimage", (request,response) ->{
-                Path tempFile = new File(tempDir.getPath()+"/temp.png").toPath();//Files.createTempFile(tempDir.toPath(), "temp", ".png");
-    //            Path tempFile = Files.createTempFile(tempDir.toPath(), "temp", ".png");
-                request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
-                try (InputStream input = request.raw().getPart("uploaded_file").getInputStream()) {
-                    Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
-                }
-                return "<h1>You uploaded this image:<h1><img src='" + tempFile.getFileName()+ "'>";
-            });
+            configureTwitterUpload();
+//            //testing stuff
+//            get("/testimage", (request,response) ->{
+//                response.type("image/png");
+//                if(tempDir.listFiles().length > 0){
+//                    byte[] data = null;
+//                    try {
+//                        data = Files.readAllBytes(tempDir.listFiles()[0].toPath());
+//                    } catch (Exception e) {e.printStackTrace();}
+//                    HttpServletResponse raw = response.raw();
+//    //                response.header("Content-Disposition", "attachment; filename=image.jpg");
+//                    response.type("image/png");
+//                    if(data != null)
+//                    try {
+//                        raw.getOutputStream().write(data);
+//                        raw.getOutputStream().flush();
+//                        raw.getOutputStream().close();
+//                    } catch (Exception e) {e.printStackTrace();}
+//                    return raw;
+//                }
+//                return null;
+//            });
+//
+//            post("/testimage", (request,response) ->{
+//                Path tempFile = new File(tempDir.getPath()+"/temp.png").toPath();//Files.createTempFile(tempDir.toPath(), "temp", ".png");
+//    //            Path tempFile = Files.createTempFile(tempDir.toPath(), "temp", ".png");
+//                request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+//                try (InputStream input = request.raw().getPart("uploaded_file").getInputStream()) {
+//                    Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
+//                }
+//                return "<h1>You uploaded this image:<h1><img src='" + tempFile.getFileName()+ "'>";
+//            });
             
             get("/:lobby/:booklet/:page", (request,response) ->{
+                System.out.println("image hit");
                 response.type("image/png");
                 byte[] data = null;
                 int lobby, booklet, page;
@@ -443,7 +498,7 @@ public class ServerApp {
              * Sets the name of the player
              */
             post("/name", (request,response) ->{
-                Gson gson = new Gson();
+                //Gson gson = new Gson();
                 HashMap<String,Object> map = new HashMap();
                 
                 
@@ -455,7 +510,8 @@ public class ServerApp {
                             name = name.trim();
                             if(name.compareTo("") == 0)
                                 halt(400, name + " is not a valid name");
-                            request.session(true).attribute("NAME", name);
+                            request.session().attribute("NAME", name);//TBD true in session
+//                            System.out.println("name set to session");
                             if(request.session().attribute("CURRENT_GAME") != null){
                                 GameManager.getInstance().UpdatePlayerName(request.session());
                             }
@@ -497,7 +553,7 @@ public class ServerApp {
                 if(lobby == null)
                     halt(400);
                 if(request.body() != null){
-                    Gson gson = new Gson();
+                    //Gson gson = new Gson();
                     HashMap<String,Object> map = new HashMap();
                     try{
                         map = (HashMap<String,Object>) gson.fromJson(request.body(), map.getClass());
@@ -548,8 +604,10 @@ public class ServerApp {
         String name;
         if(playerSession.attribute("NAME") != null)
             name = "\""+playerSession.attribute("NAME")+"\"";
-        else
+        else{
+            System.err.println("playerSession.attribute(\"NAME\") == null");
             name = null;
+        }
         
         String data = "{"
                 + "\"id\": \""+playerSession.id()+"\","

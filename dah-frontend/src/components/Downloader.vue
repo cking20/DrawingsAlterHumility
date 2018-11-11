@@ -1,15 +1,18 @@
 <template>
   <div>
-    <a class="download" :href="downloadURL()" download="drawing.png">Download {{this.datastore.state.myLobby.playerData[bookletData.owner].name}}s game <img src="../assets/download.png" alt="Download"></a>
-
+    <!-- Download {{this.datastore.state.myLobby.playerData[bookletData.owner].name}}s game  -->
+    <div style="width: fit-content;margin: auto; margin-bottom: 20px;">
         <canvas id="downLoader" ref="dlCanvas" 
         v-bind:style="{width: w + 'px', height: h + 'px', display: 'none'}" 
-        :width="w" :height="h">
-          
+        :width="w" :height="h">  
         </canvas>
-        <img id="saveImg" ref="saveImg"style="display: none">
-   
+        <img crossOrigin="Anonymous" id="saveImg" ref="saveImg">
+        <div>
+          <a class="save" :href="downloadURL()" download="drawing.png"><img src="../assets/download.png" alt="Download"></a>
+          <button v-if="!shared"class="share" @click="share()">Share</button>
+        </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -38,7 +41,8 @@ export default {
       saveImg: null,
       datastore: store.store,
       w: 350,
-      backgroundColor: '#e6e6e6'
+      backgroundColor: '#e6e6e6',
+      shared: false
     }
   },
   computed:{
@@ -58,6 +62,17 @@ export default {
   beforeDestroy: function(){
   },
   methods:{
+    share: function(){
+      if(confirm("Are you sure you want to share to: https://twitter.com/DrawingHumility")){
+        this.shared = true;
+        this.gen();
+        this.datastore.shareImage(this.canvas.toDataURL(), function(){
+            //callback
+            
+            console.log('SUBMITED');
+          });
+      }
+    },
     downloadURL: function(){
       if(this.canvas == null)
         return 0;
@@ -77,37 +92,48 @@ export default {
       var i = 0;
       for (i = 0; i < this.bookletData.pages.length-1; i+=2) {
         var img = new Image;
+        img.crossOrigin = 'anonymous';
         img.src = this.datastore.host + "/images" +this.bookletData.pages[i+1].content;
-        this.context.drawImage(img, 0,ittH*(i/2) + 50);
+        this.context.drawImage(img, (this.w-300)/2,ittH*(i/2) + 50);
 
         this.context.textAlign="center";
         this.context.font = "30px Arial"; 
         this.context.fillText(this.bookletData.pages[i].content,this.w/2,ittH*(i/2) + 40);
         this.context.textAlign="end"; 
         this.context.font = "16px Arial"; 
-        this.context.fillText("By "+this.datastore.state.myLobby.playerData[this.bookletData.pages[i].creator].name,this.w-25,ittH*(i/2 + 1)); //300+50+16+4
+        var name;
 
-        //mark up canvas center
-        this.context.beginPath();
-        this.context.strokeStyle="red";
-        this.context.moveTo(this.w/2, 0);
-        this.context.lineTo(this.w/2, this.h);
-        this.context.stroke();
-        //mark up Title
-        this.context.moveTo(0, ittH*(i/2) + 40);
-        this.context.lineTo(this.w, ittH*(i/2) + 40);
-        this.context.stroke();
-        this.context.moveTo(0, ittH*(i/2) + 50);
-        this.context.lineTo(this.w, ittH*(i/2) + 50);
-        this.context.stroke();
-        this.context.closePath();
-        //ittH*(i/2 + 1)
-        this.context.beginPath();
-        this.context.strokeStyle="green";
-        this.context.moveTo(0, ittH*(i/2 + 1));
-        this.context.lineTo(this.w, ittH*(i/2 + 1));
-        this.context.stroke();
-        this.context.closePath();
+        //if a player has left, the playerData will be null
+        try{
+          name = this.datastore.state.myLobby.playerData[this.bookletData.pages[i+1].creator].name;
+        } catch(error){
+          //console.log(error);
+          name = "Anon";
+        }
+
+        this.context.fillText("By "+name,this.w-25,ittH*(i/2 + 1)); //300+50+16+4
+
+        // //mark up canvas center
+        // this.context.beginPath();
+        // this.context.strokeStyle="red";
+        // this.context.moveTo(this.w/2, 0);
+        // this.context.lineTo(this.w/2, this.h);
+        // this.context.stroke();
+        // //mark up Title
+        // this.context.moveTo(0, ittH*(i/2) + 40);
+        // this.context.lineTo(this.w, ittH*(i/2) + 40);
+        // this.context.stroke();
+        // this.context.moveTo(0, ittH*(i/2) + 50);
+        // this.context.lineTo(this.w, ittH*(i/2) + 50);
+        // this.context.stroke();
+        // this.context.closePath();
+        // //ittH*(i/2 + 1)
+        // this.context.beginPath();
+        // this.context.strokeStyle="green";
+        // this.context.moveTo(0, ittH*(i/2 + 1));
+        // this.context.lineTo(this.w, ittH*(i/2 + 1));
+        // this.context.stroke();
+        // this.context.closePath();
 
         
       }
@@ -131,5 +157,42 @@ export default {
 </script>
 
 <style lang="scss">
+.share{
+  background-color: lightblue;
+  border: none;
+  margin: auto;
+  width: 50%;
+}
+.share:hover{
+  background-color: darkblue;
+}
+
+.save{
+  margin: auto;
+  padding: 11px 20px;
+  border-radius: 5px;
+  width: 36%;
+  color: black;
+  background: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  background-color: lightblue;
+}
+.save:hover{
+  background-color: darkblue;
+}
+@media only screen and (min-width: 10em) and (max-width: 60em) {
+  .save{
+    font-size: 1em;
+  }
+  .share{
+    font-size: 2em;
+  
+  }
+}
 
 </style>

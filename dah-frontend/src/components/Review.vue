@@ -7,18 +7,18 @@
 					<li v-for="(player, index) in results">
 						<div class="row" :class="{winner: index==0}">
 							<p class="leaderboard-name">{{player.name}}</p>
-							<p class="leaderboard-result">{{player.votes}}/{{maxVotes}} upvotes!</p>
+							<p class="leaderboard-result" style="float: right;">{{player.votes}}/{{maxVotes}} upvotes!</p>
 						</div>
 					</li>
-				</ul>
-				<ul>
-					<li v-for="(booklet, index) in datastore.state.myLobby.booklets">
-						<Downloader :bookletData="booklet"></Downloader>	
-					</li>
-				</ul>
-			
+				</ul>			
 			</div>
-
+			<ul>
+				<li v-for="(booklet, index) in datastore.state.myLobby.booklets">
+					<Downloader :bookletData="booklet"></Downloader>	
+				</li>
+			</ul>
+			<button v-if="isAdmin()" class="submit" @click="restart()">Restart Lobby</button>
+			<button class="cancel" v-on:click="datastore.triggerLoadingScreen();datastore.leaveLobby()">Leave Lobby</button>
 		</div>
 		<div v-else>
 			<H1>Vote</H1>
@@ -61,7 +61,7 @@ export default{
 				function(a,b){return b.votes - a.votes});
 		},
 		maxVotes: function(){
-			return this.datastore.state.myLobby.players.length * this.datastore.state.myLobby.players.length * this.datastore.state.myLobby.maxRounds;
+			return this.datastore.state.myLobby.booklets.length * this.datastore.state.myLobby.maxRounds;
 		}
 	},
 	mounted: function(){
@@ -72,14 +72,23 @@ export default{
 	beforeDestroy: function(){
 	},
 	methods:{	
-
+		isAdmin: function(){
+    		return this.datastore.state.myLobby.adminUuid == this.datastore.state.myData.id;
+    	},
+    	restart: function(){
+    		store.store.restartLobby();
+    	}
 	}
 }
 </script>
 <style lang="scss">
-
 	.winner{
 		color: green;
 		font-size: 1.5em;
+	}
+	@media only screen and (min-width: 10em) and (max-width: 60em) {
+		p{
+			font-size: 1em;
+		}
 	}
 </style>

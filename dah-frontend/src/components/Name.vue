@@ -34,7 +34,7 @@ export default {
   },
   methods:{
     submitNewName: function(){
-      this.name = this.name.trim();
+      this.name = this.name.trim().replace(/[&\/\\#,+()$~%.'":;*?<>{}]/g, '');
       if(this.name!= '')
         this.datastore.changeName(this.name);
     }
@@ -43,10 +43,4 @@ export default {
 </script>
 
 <style lang="scss">
-#landing-vue{
-  h1{
-    margin-top: 25%;
-    font-size: 50px;
-  }
-}
 </style>

@@ -23,7 +23,7 @@
 			<button class="download" >Download Booklet</button>
 		</div> -->
 		
-		<button @click="DEV_UNDO">DEV BACK</button>
+		<!-- <button @click="DEV_UNDO">DEV BACK</button> -->
 	</div>
 </template>
 
@@ -110,7 +110,7 @@ export default{
 	padding-top: 49%;
 	padding-bottom: 45%;
 	float: left;
-	width: 10%;
+	width: 9%;
 }
 .booklet{
 	padding-top: 0;

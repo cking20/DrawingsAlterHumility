@@ -4,7 +4,7 @@
     <ul>
       <li class="row" v-for="player in datastore.state.myLobby.playerData">
         <div :class="{submitted: player.submitted, playing: !player.submitted}">
-          <p>{{player.name}}</p>
+          <p style="color: white">{{player.name}}</p>
         </div>
       </li>
     </ul>
@@ -41,10 +41,10 @@ export default {
   margin: auto;
 }
 .submitted{
-  background-color: green;
+  background-color: #569818;
 }
 .playing{
-  background-color: red;
+  background-color: #9a1842;
 }
 li p{
   text-align: left;

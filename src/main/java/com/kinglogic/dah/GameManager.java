@@ -41,8 +41,8 @@ public class GameManager {
     
     /**
      * Returns the Lobby with that lobby_id 
-     * @param lobby_id must be >=0 and < MAX_LOBBIES
-     * @return 
+     * @param lobby_id should be >=0 and < MAX_LOBBIES, values outside will return null
+     * @return the lobby json if it exists, null 
      */
     public String getLobby(int lobby_id){
         if(lobby_id < lobbies.length && lobby_id >= 0)
@@ -53,8 +53,8 @@ public class GameManager {
     
     /**
      * Get the data of all lobbies that are not in progress
-     * @param amount must be > 0 and < MAX_LOBBIES
-     * @param offset must be > 0 and < MAX_LOBBIES
+     * @param amount should be > 0 
+     * @param offset should be >= 0 and < MAX_LOBBIES
      * @return 
      */    
     public String getJoinableLobbies(int amount, int offset){
@@ -93,6 +93,25 @@ public class GameManager {
                 if(lobbies[lobby_id].Checkout(admin.id(), admin.attribute("NAME"))){//the lobby gets successfully checked out
                     admin.attribute("CURRENT_GAME", lobby_id);
                     return  gson.toJson(lobbies[lobby_id], Lobby.class);
+                }
+        }
+        return null;
+    }
+    
+    /**
+     * Restarts the lobby back to the pregame phase
+     * @param admin the session attempting to reset
+     * @return the lobby json if the lobby is reset, null otherwise
+     */
+    public String RestartLobby(Session admin){
+        String accesor_id = admin.id();
+        if(admin.attribute("CURRENT_GAME") == null)
+            return null;
+        int lobby_id = admin.attribute("CURRENT_GAME");
+        if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
+            if(accesor_id.compareTo(lobbies[lobby_id].getAdminUuid()) == 0)//if its the admin releasing it
+                if(lobbies[lobby_id].Restart(accesor_id)){//it successfully releases
+                    return gson.toJson(lobbies[lobby_id], Lobby.class);
                 }
         }
         return null;
@@ -243,7 +262,7 @@ public class GameManager {
     /**
      * Submit a guess to the game. Ensures the integrity of the gamestate before
      *      accepting the data.
-     * @param player that is submitting the guess
+     * @param player session id that is submitting the guess
      * @param gameID the game that the player is currently in
      * @param guess the guess to be uploaded
      * @return true iff the guess has been added to the game

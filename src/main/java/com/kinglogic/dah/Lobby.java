@@ -34,7 +34,7 @@ public class Lobby {
         isReleased = true;
         isInProgress = false;
         roundNumber = -1;
-        maxRounds = 10;
+        maxRounds = 2;
         maxPlayers = 10;
         players = new ArrayList<>();
         booklets = new ArrayList<>();
@@ -71,6 +71,12 @@ public class Lobby {
         if(accessor_id.compareTo(this.adminUuid) == 0){
             isInProgress = false;
             roundNumber = -1;
+            for (String player : players) {
+                playerData.get(player).votes = 0;
+                playerData.get(player).submitted = false;
+                playerData.get(player).currentBooklet = null;
+            }
+            booklets.clear();
             return true;
         }
         return false;
@@ -94,9 +100,10 @@ public class Lobby {
             adminUuid = null;
             isReleased = true;
             setPassword(null);
+            name = id+"";
             isInProgress = false;
             roundNumber = -1;
-            maxRounds = 10;
+            maxRounds = 2;
             maxPlayers = 10;
             players.clear();
             playerData.clear();
@@ -125,6 +132,8 @@ public class Lobby {
                     Player player = new Player();
                     player.name = playerName;
                     this.playerData.put(playerID, player);
+                    //recalculate round number
+                    maxRounds = 2 * (this.players.size()-1);
                     return true;
                 }
         }
@@ -141,6 +150,8 @@ public class Lobby {
             players.remove(player);
             booklets.remove(playerData.get(player).currentBooklet);
             playerData.remove(player);
+            //recalculate round number
+            maxRounds = 2 * this.players.size();
             return true;
         }
         return false;
@@ -318,10 +329,11 @@ public class Lobby {
     }
 
     /**
+     * @deprecated the rounds should be calculated when a player joins or leaves
      * @param maxRounds the maxRounds to set
      */
     public void setMaxRounds(int maxRounds) {
-        this.maxRounds = maxRounds;
+        //this.maxRounds = maxRounds;
     }
 
     /**

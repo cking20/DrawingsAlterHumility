@@ -43,4 +43,9 @@ export default {
 li p{
   text-align: left;
 }
+@media only screen and (min-width: 10em) and (max-width: 60em) {
+  .row p{
+    margin: 0;
+  }
+}
 </style>

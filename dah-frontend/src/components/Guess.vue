@@ -1,7 +1,7 @@
 <template>
 	<div class = guess-vue>
 	<div v-if="!this.datastore.getHaveISubmitted()">
-		<H1>Guess what this is</H1>
+		<H2>Guess what this is</H2>
 		<img id="testImage" ref="testImage" width="100%">
 		<input v-model="guess" placeholder="Your Guess Here">
 		<button @click="submit()" class="submit" :disabled="!isValid">SUBMIT</button>
@@ -57,7 +57,7 @@ export default{
 	    submit: function(){
 	    	if(this.guess != null){
 	    		this.datastore.triggerLoadingScreen();
-    			this.datastore.submitGuess(this.guess);
+    			this.datastore.submitGuess(this.guess.trim().replace(/[&\/\\#,+()$~%.'":;*?<>{}]/g, ''));
 
 	    	}
     	},
@@ -65,7 +65,12 @@ export default{
 }
 </script>
 <style lang="scss">
-h1{
-	margin: 0;
+@media only screen and (min-width: 10em) and (max-width: 60em) {
+	h2{
+		margin-bottom: 0;
+	}
+	input{
+		font-size: 1em;
+	}
 }
 </style>

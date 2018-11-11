@@ -1,7 +1,7 @@
 <template>
 	<div class = draw-vue>
 		<div v-if="!this.dataStore.getHaveISubmitted()">
-			<H1>Draw: {{this.dataStore.getLastContentOfMyBooklet()}}</H1>
+			<H2>Draw: {{this.dataStore.getLastContentOfMyBooklet()}}</H2>
 			<div class="drawing-toolbar vertical">
 				<ul>
 					<li><div class="selector">
@@ -39,7 +39,7 @@
 				</ul>
 			</div>
 			<div>
-				<canvas class="drawing-area card" ref="theCanvas" width="300" height="300" style="width: 80%;"
+				<canvas class="drawing-area card" ref="theCanvas" width="300" height="300" 
 					@mousemove="mouseMove" 
 					@mousedown="mouseDown" 
 					@mouseup="mouseUp" 
@@ -343,6 +343,7 @@ export default{
 </script>
 <style lang="scss">
 .drawing-area{
+	width: 80%;
 	float: left;
 	cursor: crosshair;
 }
@@ -418,5 +419,34 @@ select {
 	height: 200%;
 	border-radius: 5px;
 	margin: 8px 0;
+}
+@media only screen and (min-width: 10em) and (max-width: 60em) {
+	h2{
+		margin-bottom: 0;
+	}
+	button{
+		padding: 0em .2em;
+	}
+	.tool{
+		width: 100%;
+	}
+.drawing-area{
+	width: 100%;
+	float: none;
+}
+.drawing-toolbar{
+	float: none;
+	li{
+		width: 10%;
+	}
+}
+.vertical{
+	width: 100%;
+	ul{
+		li{
+			display: inline-block;
+		}
+	}
+}
 }
 </style>

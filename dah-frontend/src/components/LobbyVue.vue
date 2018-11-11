@@ -4,10 +4,13 @@
 		<!-- <p>{{JSON.stringify(datastore.getMyLobbyData())}}</p> -->
 		<!-- <button v-on:click="datastore.refreshMyLobbyData()">Refresh My Lobby</button> -->
 		<!-- <button v-on:click="datastore.joinLobby(0)">Join Lobby</button> -->
-		<div>
+		<div v-if="datastore.state.myLobby != null">
 			<Pregame v-if="datastore.state.myLobby.roundNumber == -1"></Pregame>
 			<Play v-else-if="datastore.state.myLobby.roundNumber <= datastore.state.myLobby.maxRounds"></Play>
 			<Review v-else></Review>
+		</div>
+		<div v-else>
+			<h1> Preparing Awesomeness...</h1>
 		</div>
 
 		

@@ -3,14 +3,15 @@
 		<div class="card">
 			<h3>{{this.lobby.name}}</h3>
 			<p>Admin: {{this.adminName()}}</p>
+			<p>Players: {{this.numPlayers}}/{{this.lobby.maxPlayers}}</p>
 			<div v-if="this.lobby.isInProgress">
 				<p class="warning">Game In Progress</p>
 			</div>
 			<div v-else>
-				
-			</div>
-			<p>Players: {{this.numPlayers}}/{{this.lobby.maxPlayers}}</p>
+			<input v-if="lobby.password != null" v-model="inputPassword" placeholder="Enter Password">	
 			<button v-if="this.numPlayers < this.lobby.maxPlayers" v-on:click="join()" class="submit">Join</button>
+			</div>
+			
 		</div>	
 	</div>
 </template>
@@ -26,6 +27,11 @@ export default{
 				return {};}
 		}
 	},
+	data: function() {
+		return {
+			inputPassword: ""
+		}
+	},
 	computed:{
 		numPlayers: function(){
 			return this.lobby.players.length;
@@ -38,7 +44,7 @@ export default{
 	methods:{
 		join: function(){
 			console.log("joining Lobby");
-			store.store.joinLobby(this.lobby.id);
+			store.store.joinLobby(this.lobby.id, this.inputPassword);
 		},
 		adminName: function(){
 			return this.lobby.playerData[this.lobby.adminUuid].name;
@@ -48,8 +54,7 @@ export default{
 }
 </script>
 <style lang="scss">
-	.lobbypreview{
-		width: 100%; 
+.lobbypreview{ 
 		h3{
 			padding: 5%;
 		}
@@ -61,4 +66,15 @@ export default{
 	.warning{
 		color: red;
 	}
+@media only screen and (min-width: 10em) and (max-width: 60em) {
+	.lobbypreview{ 
+		h3{
+			font-size: 3em;
+		}
+		p{
+			padding-left: 5%;
+			padding-right: 5%;
+		}
+	}
+}
 </style>
