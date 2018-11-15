@@ -27,8 +27,11 @@ import static spark.Spark.*;
  * @author chris
  */
 public class ServerApp {
-    private static final String host = "http://drawings-alter-humility.herokuapp.com";
-//    private static final String host = "http://localhost:8080";
+    
+//    private static final String host = "http://drawings-alter-humility.herokuapp.com";
+    private static final String host = "http://localhost:8080";
+//    private static final String host = "http://192.168.254.198:8080";
+    
 //    private static final String host = "*";
     private static Gson gson;
     
@@ -41,10 +44,6 @@ public class ServerApp {
         Spark.externalStaticFileLocation("temp");
         port(getHerokuAssignedPort());
         configureRoutes();
-        
-        
-        
-        
 }
     public static void configureTwitterUpload(){     
         post("/share", (request,response) ->{

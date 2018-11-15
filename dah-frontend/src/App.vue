@@ -86,6 +86,7 @@ export default {
   text-align: center;
   color: #ffffff;
   margin-top: 0px;
+  width: 100%;
 }
 
 
@@ -96,9 +97,9 @@ body{
 
 button{
   border: 2px solid lightgrey;
-  border-radius: 4px;
+  border-radius: .25em;
   width: 50%;
-  padding: 12px 20px;
+  padding: .5em 1.25em;
   margin: 8px 0;
   color: white;
   background: none;
@@ -116,9 +117,9 @@ button:hover{
 input{
   text-align: center;
   border: 2px solid white;
-  border-radius: 4px;
+  border-radius: .25em;
   width: 50%;
-  padding: 12px 20px;
+  padding: .5em 1.25em;
   margin: 8px 0;
   box-sizing: border-box;
 }
@@ -228,9 +229,12 @@ a {
   background-color: #acacac;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 1), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-@media only screen and (min-width: 10em) and (max-width: 60em) {
+@media only screen and (orientation: portrait) and (max-width: 800px){
   h1{
     font-size: 5em;
+  }
+  h2{
+    font-size: 3em;
   }
   p{
     font-size: 3em;
@@ -249,6 +253,40 @@ a {
   button{
     width: 100%;
     font-size: 2em;
+  }
+  #name-vue{
+    z-index: 1000;
+    position: fixed;
+    bottom: 2%;
+    left: 5%;
+    margin: auto;
+    width: 90%;
+  }
+}
+@media only screen and (orientation: portrait) and (min-width: 800px) {
+  h1{
+    font-size: 10em;
+  }
+  h2{
+    font-size: 6em;
+  }
+  p{
+    font-size: 6em;
+  }
+  .center {
+    width: 100%;
+    padding: 0px;
+  }
+  .card {
+    margin: 0px;
+  }
+  input {
+    width: 100%;
+    font-size: 4em;
+  }
+  button{
+    width: 100%;
+    font-size: 4em;
   }
   #name-vue{
     z-index: 1000;

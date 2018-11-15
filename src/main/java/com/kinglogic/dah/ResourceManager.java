@@ -178,5 +178,14 @@ public class ResourceManager {
     }
     
     
+    /**
+     * For testing only. 
+     * Resets State
+     */
+    private void NUKE(){
+        instance = null;
+        tempDir.delete();
+        persistDir.delete();
+    }
     
 }

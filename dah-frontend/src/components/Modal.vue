@@ -29,6 +29,5 @@ export default {
 </script>
 
 <style lang="scss">
-/*found from https://www.w3schools.com/howto/howto_css_modals.asp*/
 
 </style>

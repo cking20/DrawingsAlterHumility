@@ -1,14 +1,14 @@
 <template>
   <div>
     <!-- Download {{this.datastore.state.myLobby.playerData[bookletData.owner].name}}s game  -->
-    <div style="width: fit-content;margin: auto; margin-bottom: 20px;">
+    <div class="render-container">
         <canvas id="downLoader" ref="dlCanvas" 
         v-bind:style="{width: w + 'px', height: h + 'px', display: 'none'}" 
         :width="w" :height="h">  
         </canvas>
         <img crossOrigin="Anonymous" id="saveImg" ref="saveImg">
         <div>
-          <a class="save" :href="downloadURL()" download="drawing.png"><img src="../assets/download.png" alt="Download"></a>
+          <a class="save" :href="downloadURL()" download="drawing.png"><img class="tool-icon" src="../assets/download.png" alt="Download"></a>
           <button v-if="!shared"class="share" @click="share()">Share</button>
         </div>
     </div>
@@ -157,6 +157,11 @@ export default {
 </script>
 
 <style lang="scss">
+.render-container{
+  width: fit-content;
+  margin: auto;
+  margin-bottom: 20px;
+}
 .share{
   background-color: lightblue;
   border: none;
@@ -169,8 +174,8 @@ export default {
 
 .save{
   margin: auto;
-  padding: 11px 20px;
-  border-radius: 5px;
+  padding: .7em 1.25em;
+  border-radius: .5em;
   width: 36%;
   color: black;
   background: none;
@@ -185,12 +190,23 @@ export default {
 .save:hover{
   background-color: darkblue;
 }
-@media only screen and (min-width: 10em) and (max-width: 60em) {
+@media only screen and (orientation: portrait) {
+  .render-container{
+    width: 100%;
+  }
+  .tool-icon{
+    width: 2em;
+  }
+  .saveImg{
+    width: 100%;
+  }
   .save{
-    font-size: 1em;
+    vertical-align: center;
+    font-size: 2em;
+    padding: 1.5em 1.25em;
   }
   .share{
-    font-size: 2em;
+    font-size: 4em;
   
   }
 }

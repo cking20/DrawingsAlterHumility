@@ -62,7 +62,7 @@ export default{
 	overflow: hidden;
 	vertical-align: top;
 }
-@media only screen and (min-width: 20em) and (max-width: 60em) {
+@media only screen and (orientation: portrait) {
 	.horizontal{
 		width:100%;
 		display: inline-block;

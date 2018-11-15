@@ -65,12 +65,12 @@ export default{
 }
 </script>
 <style lang="scss">
-@media only screen and (min-width: 10em) and (max-width: 60em) {
+@media only screen and (orientation: portrait) {
 	h2{
 		margin-bottom: 0;
 	}
 	input{
-		font-size: 1em;
+		font-size: 2em;
 	}
 }
 </style>

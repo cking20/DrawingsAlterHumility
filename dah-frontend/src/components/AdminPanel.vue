@@ -71,9 +71,9 @@ button{
 input{
   width: 100%;
 }
-@media only screen and (min-width: 10em) and (max-width: 60em) {
+@media only screen and (orientation: portrait) {
   input{
-    font-size: .5em;
+    font-size: 1em;
     width: 100%;
   }
 }

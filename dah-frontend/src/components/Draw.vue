@@ -18,23 +18,23 @@
 						</select>
 					</div></li>
 					<li><button class="grey tool" v-on:click="openColorModal">
-						<img src="../assets/drop-silhouette.png" alt="Pen Color">
+						<img class="tool-icon" src="../assets/drop-silhouette.png" alt="Pen Color">
 					</button></li>
 					<li><button class="grey tool" value="Pen" id="pen" v-on:click="pen">
-						<img src="../assets/pencil-edit-button.png" alt="Pen"></button></li>
-					<li><button class="grey tool" type="button" value="Erase" id="erase" v-on:click="color = backgroundColor"><img src="../assets/eraser.png" alt="Eraser"></button></li>
+						<img class="tool-icon" src="../assets/pencil-edit-button.png" alt="Pen"></button></li>
+					<li><button class="grey tool" type="button" value="Erase" id="erase" v-on:click="color = backgroundColor"><img class="tool-icon" src="../assets/eraser.png" alt="Eraser"></button></li>
 					<!-- <li><button class="tool"
 						type="button" value="Save" id="save"  v-on:click="saveImage()">Save</button></li>
 					<li><button class="tool" 
 						type="button" value="Load" id="load"  v-on:click="loadImage()">Load</button></li> -->
-					<li><button class="grey tool" type="button" value="Bg" id="background" v-on:click="showBGModal = !showBGModal"><img src="../assets/paint-bucket.png" alt="Background Color"></button></li>
-					<li><button class="cancel tool" type="button" value="Undo" id="undo"  v-on:click="loadLast()"><img src="../assets/undo-arrow.png" alt="Undo"></button></li>
-					<li><button class="cancel tool" type="button" value="Clear" id="clear"  v-on:click="eraseImage()"><img src="../assets/clear-button.png" alt="Clear"></button></li>
-					<li>
+					<li><button class="grey tool" type="button" value="Bg" id="background" v-on:click="showBGModal = !showBGModal"><img class="tool-icon" src="../assets/paint-bucket.png" alt="Background Color"></button></li>
+					<li><button class="cancel tool" type="button" value="Undo" id="undo"  v-on:click="loadLast()"><img class="tool-icon" src="../assets/undo-arrow.png" alt="Undo"></button></li>
+					<li><button class="cancel tool" type="button" value="Clear" id="clear"  v-on:click="eraseImage()"><img class="tool-icon" src="../assets/clear-button.png" alt="Clear"></button></li>
+					<!-- <li>
 						<button class="grey tool">
-						<a style="width: 16px;" class="download" :href="canvasURL()" download="drawing.png"><img src="../assets/download.png" alt="Download"></a>
+						<a  class="download" :href="canvasURL()" download="drawing.png"><img src="../assets/download.png" alt="Download"></a>
 						</button>
-					</li>
+					</li> -->
 					
 				</ul>
 			</div>
@@ -358,6 +358,7 @@ export default{
     transition-duration: 0.4s;
     width: 100%;
     overflow: hidden;
+    padding: 1em 1em;
 }
 .drawing-toolbar{
 	float: left;
@@ -420,33 +421,47 @@ select {
 	border-radius: 5px;
 	margin: 8px 0;
 }
-@media only screen and (min-width: 10em) and (max-width: 60em) {
+@media only screen and (orientation: portrait) {
+	#tool-icon{
+		width: 1em;
+	}
 	h2{
 		margin-bottom: 0;
 	}
 	button{
-		padding: 0em .2em;
+		
 	}
 	.tool{
 		width: 100%;
+		padding: .25em 0em;
 	}
-.drawing-area{
-	width: 100%;
-	float: none;
-}
-.drawing-toolbar{
-	float: none;
-	li{
-		width: 10%;
+	#lineWidth{
+		font-size: 3em;
+		vertical-align: top;
+		padding: .5em 0em;
 	}
-}
-.vertical{
-	width: 100%;
-	ul{
+	.drawing-area{
+		width: 100%;
+		float: none;
+	}
+	.drawing-toolbar{
+		float: none;
 		li{
-			display: inline-block;
+			width: 13%;
 		}
 	}
-}
+	.vertical{
+		width: 100%;
+		ul{
+			li{
+				vertical-align: top;
+				display: inline-block;
+			}
+		}
+	}
+	.modal-content{
+		width: 70%;
+    	height: 70%;
+	}
 }
 </style>

@@ -39,15 +39,27 @@ export default {
     font-size: 60px;
   }
 }
-@media only screen and (min-width: 20em) and (max-width: 60em) {
+@media only screen and (orientation: portrait) and (max-width: 800px){
   #landing{
-  h1{
-    margin-top: 25%;
-    font-size: 5em;
+    h1{
+      margin-top: 25%;
+      font-size: 5em;
+    }
+    h2{
+      font-size: 2em;
+    }
   }
-  h2{
-    font-size: 2em;
-  }
+
 }
+@media only screen and (orientation: portrait) and (min-width: 800px) {
+  #landing{
+    h1{
+      margin-top: 25%;
+      font-size: 10em;
+    }
+    h2{
+      font-size: 4em;
+    }
+  }
 }
 </style>

@@ -76,7 +76,7 @@ public class GameManager {
     
     /**
      * Checkouts the lobby with admin_id as the admin 
-     * @param admin the sesion to give admin privs to
+     * @param admin the session to give admin privs to
      * @return the Lobby object's data iff the operation was completed successfully
      */
     public String CheckoutLobby(Session admin){
@@ -89,8 +89,11 @@ public class GameManager {
             counter++;
         }
         if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
+            String name = admin.attribute("NAME");
+            String id = admin.id();
             if(lobbies[lobby_id].isIsReleased())//the lobby is released
-                if(lobbies[lobby_id].Checkout(admin.id(), admin.attribute("NAME"))){//the lobby gets successfully checked out
+                
+                if(lobbies[lobby_id].Checkout(id, name)){//the lobby gets successfully checked out
                     admin.attribute("CURRENT_GAME", lobby_id);
                     return  gson.toJson(lobbies[lobby_id], Lobby.class);
                 }
@@ -268,6 +271,8 @@ public class GameManager {
      * @return true iff the guess has been added to the game
      */
     public boolean SubmitGuess(String player, int gameID, String guess){
+        if(gameID < 0 || gameID >= lobbies.length)
+            return false;
          Lobby current = lobbies[gameID];
          if(!current.isIsInProgress())
              return false;
@@ -292,10 +297,12 @@ public class GameManager {
      * @param player that is submitting the drawing
      * @param gameID the game that the player is currently in
      * @param stream the part's stream to be uploaded
-     * @return true iff the image has been added to the game
+     * @return the file name iff the image has been added to the game
      */
     public String SubmitDrawing(String player, int gameID, InputStream stream){
-         Lobby current = lobbies[gameID];
+        if(gameID < 0 || gameID >= lobbies.length)
+            return null; 
+        Lobby current = lobbies[gameID];
          if(!current.isIsInProgress())
              return null;
          Player data = current.getPlayerData(player);
@@ -313,21 +320,25 @@ public class GameManager {
          return null;
     }
     
+    /**
+     * Adds a player's vote to a specific submission
+     * @param player the player who is voting
+     * @param gameID the game that the player is in
+     * @param whosBooklet the booklet ID that the player is voting on
+     * @param round the round in the booklet to vote on
+     * @return true iff the vote was successfully added
+     */
     public boolean voteOn(String player, int gameID, String whosBooklet, int round){
         Lobby lobbyToVoteOn = lobbies[gameID];
         if(lobbyToVoteOn == null)
             return false;
-        return lobbyToVoteOn.vote(player, whosBooklet, round);
-        
-//        Player data = current.getPlayerData(player);
-//        if(data == null)
-//            return false;
-        
+        return lobbyToVoteOn.vote(player, whosBooklet, round);        
     }
 
     
     /**
      * Meant only for unit testing
+     * Resets the Game Manager's state
      */
     private void NUKE(){
         instance = null;

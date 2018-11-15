@@ -5,10 +5,13 @@
  */
 package com.kinglogic.dah;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -36,25 +39,35 @@ public class GameManagerTest {
         assertEquals(expResult, result);
     }
 
-    /**
-     * Test of getLobby method, of class GameManager.
-     */
     @Test
-    public void testGetLobby() {
-        System.out.println("getLobby");
-        //EQ:0 - Get negative lobby 
-        String t1 = GameManager.getInstance().getLobby(-1);
-        assertEquals(null, t1);
-        //EQ:0 - Get positive lobby in range
+    public void testGetLobby47() {
         String t2 = GameManager.getInstance().getLobby(0);
         assertNotEquals(null, t2);
-        String t3 = GameManager.getInstance().getLobby(1);
-        assertNotEquals(null, t3);
-        //EQ:0 - Get positive lobby out of range
-        String t4 = GameManager.getInstance().getLobby(GameManager.MAX_LOBBIES);
-        assertEquals(null, t4);
-        String t5 = GameManager.getInstance().getLobby(GameManager.MAX_LOBBIES+1);
-        assertEquals(null, t5);
+        
+    }
+    @Test
+    public void testGetLobby48() {
+        String t1 = GameManager.getInstance().getLobby(Integer.MAX_VALUE);
+        assertEquals(null, t1);
+    }
+    @Test
+    public void testGetLobby49() {
+        String t1 = GameManager.getInstance().getLobby(-1);
+        assertEquals(null, t1);
+    }
+    @Test
+    public void testGetLobby50() {
+        //imposible to compile
+//        String t1 = GameManager.getInstance().getLobby("test");
+//        assertEquals(null, t1);
+    }
+    @Test
+    public void testGetLobby51() {
+        try{
+            String t1 = GameManager.getInstance().getLobby((Integer)null);
+            fail();
+        }catch (Exception e){
+        }
     }
 
     /**
@@ -338,25 +351,230 @@ public class GameManagerTest {
         
     }
 
-    /**
-     * Test of SubmitGuess method, of class GameManager.
-     */
     @Test
-    public void testSubmitGuess() {
-        // TODO review the generated test code and remove the default call to fail.
+    public void testSubmitGuess106() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        GameManager.getInstance().StartGame(scaffold_player.session());
+        
+        boolean expected = true;
+        boolean actual = GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "guess");
+        assertEquals(expected, actual); 
+    }
+    
+    @Test
+    public void testSubmitGuess107() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        
+        boolean expected = false;
+        boolean actual = GameManager.getInstance().SubmitGuess("some random String", 0, null);
+        assertEquals(expected, actual); 
+    }
+    
+    @Test
+    public void testSubmitGuess108() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        
+        boolean expected = false;
+        boolean actual = GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), GameManager.MAX_LOBBIES, "guess");
+        assertEquals(expected, actual); 
+    }
+    @Test
+    public void testSubmitGuess109() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        
+        boolean expected = false;
+        boolean actual = GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), -1, "guess");
+        assertEquals(expected, actual);    
+    }
+    @Test
+    public void testSubmitGuess110() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        //imposible to compile
+//        boolean expected = false;
+//        boolean actual = GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), "test", "guess");
+//        assertEquals(expected, actual); 
+    }
+    @Test
+    public void testSubmitGuess111() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        
+        try{
+            boolean actual = GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), (Integer)null, "guess");
+            fail();
+        }catch (Exception e){
+        
+        } 
+    }
+    
+    @Test
+    public void testSubmitGuess112() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        //wont compile. incompatable types
+        boolean expected = false;
+        //boolean actual = GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), (Integer)1.8, "guess");
+        //assertEquals(expected, actual); 
+    }
+    
+    @Test
+    public void testSubmitGuess113() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        
+        boolean expected = false;
+        boolean actual = GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "");
+        assertEquals(expected, actual); 
+    }
+    @Test
+    public void testSubmitGuess114() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        //wont compile
+        boolean expected = false;
+//        boolean actual = GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, 1234);
+//        assertEquals(expected, actual); 
+    }
+    
+    @Test
+    public void testSubmitDrawing115() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        GameManager.getInstance().StartGame(scaffold_player.session());
+        GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "guess");
+        
+        InputStream stream = GetImageInputStream();
+        String expected = "/0/0/1";
+        String actual = GameManager.getInstance().SubmitDrawing(scaffold_player.session().id(), 0, stream);
+        assertEquals(expected, actual); 
+    }
+    
+    @Test
+    public void testSubmitDrawing116() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "guess");
+        
+        InputStream stream = GetImageInputStream();
+        String expected = null;
+        String actual = GameManager.getInstance().SubmitDrawing("not player ID", 0, stream);
+        assertEquals(expected, actual); 
+    }
+    
+    @Test
+    public void testSubmitDrawing117() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "guess");
+        
+        InputStream stream = GetImageInputStream();
+        String expected = null;
+        String actual = GameManager.getInstance().SubmitDrawing(scaffold_player.session().id(), GameManager.MAX_LOBBIES, stream);
+        assertEquals(expected, actual); 
+    }
+    @Test
+    public void testSubmitDrawing118() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "guess");
+        
+        InputStream stream = GetImageInputStream();
+        String expected = null;
+        String actual = GameManager.getInstance().SubmitDrawing(scaffold_player.session().id(), -1, stream);
+        assertEquals(expected, actual);    
+    }
+    @Test
+    public void testSubmitDrawing119() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "guess");
+                
+        //imposible to compile
+//        InputStream stream = GetImageInputStream();
+//        String actual = GameManager.getInstance().SubmitDrawing(scaffold_player.session().id(), "test, stream);
         
     }
-
-    /**
-     * Test of SubmitDrawing method, of class GameManager.
-     */
     @Test
-    public void testSubmitDrawing() {
-        // TODO review the generated test code and remove the default call to fail.
+    public void testSubmitDrawing120() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "guess");
         
+        try{
+            InputStream stream = GetImageInputStream();
+            String actual = GameManager.getInstance().SubmitDrawing(scaffold_player.session().id(), (Integer)null, stream);
+            fail();
+        }catch (Exception e){
+        
+        } 
+    }
+    
+    @Test
+    public void testSubmitDrawing121() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "guess");
+        
+//wont compile. incompatable types
+//        InputStream stream = GetImageInputStream();
+//        String expected = null;
+//        String actual = GameManager.getInstance().SubmitDrawing(scaffold_player.session().id(), ((Integer)1.8), stream);
+//        assertEquals(expected, actual);  
+    }
+    
+    @Test
+    public void testSubmitDrawing122() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "guess");
+                
+        InputStream stream = GetImageInputStream();
+        try {
+            stream.close();
+        } catch (IOException ex) {
+            Logger.getLogger(GameManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String expected = null;
+        String actual = GameManager.getInstance().SubmitDrawing(scaffold_player.session().id(), -1, stream);
+        assertEquals(expected, actual);   
+    }
+    @Test
+    public void testSubmitDrawing123() {
+        MockHttpServletRequest mock = new MockHttpServletRequest();
+        Request scaffold_player = RequestResponseFactory.create(mock);
+        GameManager.getInstance().CheckoutLobby(scaffold_player.session());
+        GameManager.getInstance().SubmitGuess(scaffold_player.session().id(), 0, "guess");
+        
+        InputStream stream = GetTextInputStream();
+        String expected = null;
+        String actual = GameManager.getInstance().SubmitDrawing(scaffold_player.session().id(), -1, stream);
+        assertEquals(expected, actual);  
     }
     
     
+    @After
     public void TearDownGameManager(){
         Method method;
         try {
@@ -375,4 +593,14 @@ public class GameManagerTest {
             Logger.getLogger(GameManagerTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public InputStream GetImageInputStream(){
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        return classLoader.getResourceAsStream("test.png");
+    }
+    public InputStream GetTextInputStream(){
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        return classLoader.getResourceAsStream("prompts.txt");
+    }
+    
 }

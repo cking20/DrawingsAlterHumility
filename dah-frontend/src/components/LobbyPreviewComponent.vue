@@ -66,10 +66,10 @@ export default{
 	.warning{
 		color: red;
 	}
-@media only screen and (min-width: 10em) and (max-width: 60em) {
+@media only screen and (orientation: portrait) {
 	.lobbypreview{ 
 		h3{
-			font-size: 3em;
+			font-size: 6em;
 		}
 		p{
 			padding-left: 5%;

@@ -84,11 +84,12 @@ export default{
 <style lang="scss">
 	.winner{
 		color: green;
-		font-size: 1.5em;
+		font-size: 3em;
 	}
-	@media only screen and (min-width: 10em) and (max-width: 60em) {
+	@media only screen and (orientation: portrait) {
 		p{
-			font-size: 1em;
+			font-size: 2em;
 		}
+		
 	}
 </style>

@@ -43,7 +43,7 @@ export default {
 li p{
   text-align: left;
 }
-@media only screen and (min-width: 10em) and (max-width: 60em) {
+@media only screen and (orientation: portrait) {
   .row p{
     margin: 0;
   }

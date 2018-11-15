@@ -85,10 +85,10 @@ export default{
 		margin-bottom: 0px;
 		text-align: center;
 	}
-	@media only screen and (min-width: 10em) and (max-width: 60em) {
+	@media only screen and (orientation: portrait) {
 		.item p{
-			padding-top: .15em;
-			font-size: 2em;
+			padding-top: .3em;
+			font-size: 4em;
 		}
 	}
 </style>
