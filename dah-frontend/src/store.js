@@ -1,7 +1,7 @@
 const store = {
-	host: 'http://192.168.254.198:4567/game',
+	// host: 'http://192.168.254.198:4567/game',
 	// host: 'http://localhost:4567/game',
-	// host: 'https://drawings-alter-humility.herokuapp.com/game', //the address of the server host *with /game appended*
+	host: 'https://drawings-alter-humility.herokuapp.com/game', //the address of the server host *with /game appended*
 	state:{						//The core state of the application
 		currentVue: 'LandingVue',	//the Vue that the application should display
 		reviewingBooklet: 0,		//index of booklet being reviewed. for use in review

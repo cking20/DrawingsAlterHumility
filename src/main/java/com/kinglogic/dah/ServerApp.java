@@ -28,9 +28,9 @@ import static spark.Spark.*;
  */
 public class ServerApp {
     
-//    private static final String host = "http://drawings-alter-humility.herokuapp.com";
+    private static final String host = "http://drawings-alter-humility.herokuapp.com";
 //    private static final String host = "http://localhost:8080";
-    private static final String host = "http://192.168.254.198:8080";
+//    private static final String host = "http://192.168.254.198:8080";
     
 //    private static final String host = "*";
     private static Gson gson;
@@ -216,6 +216,27 @@ public class ServerApp {
                             halt(400, js.getMessage());
                         }
                     }
+                    
+                    response.status(403);
+                    return "{\"message\": \"nope, stars. can't do it\"}";
+                });
+                get("/join", (request,response) ->{
+                    try{   
+                        if( GameManager.getInstance().JoinLobby(
+                            request.session(), 
+                            Integer.parseInt(request.params(":lobby_id")),
+                            ""
+                        )){
+                            //return GameManager.getInstance().getLobby(Integer.parseInt(request.params(":lobby_id")));
+                            
+                            response.redirect("../../../index.html");
+                        }
+                        halt(403, "password not correct");
+                    }catch(JsonSyntaxException js){
+                        System.err.println(js.getMessage());
+                        halt(400, js.getMessage());
+                    }
+                    
                     
                     response.status(403);
                     return "{\"message\": \"nope, stars. can't do it\"}";

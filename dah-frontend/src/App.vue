@@ -297,4 +297,99 @@ a {
     width: 90%;
   }
 }
+
+
+/*generated from https://www.cssportal.com/style-input-range/*/
+input[type=range] {
+  height: 47px;
+  -webkit-appearance: none;
+  margin: 10px 0;
+  width: 100%;
+  padding: 0;
+  background-color: #acacac;
+  border: 0px;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 30px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0px 0px 0px #000000;
+  background: #595959;
+  border-radius: 50px;
+  border: 0px solid #000000;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 10px #000000;
+  border: 0px solid #000000;
+  height: 40px;
+  width: 40px;
+  border-radius: 50px;
+  background: #D4D4D4;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -5px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #595959;
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 30px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0px 0px 0px #000000;
+  background: #595959;
+  border-radius: 50px;
+  border: 0px solid #000000;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 1px 1px 10px #000000;
+  border: 0px solid #000000;
+  height: 40px;
+  width: 40px;
+  border-radius: 50px;
+  background: #D4D4D4;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 30px;
+  cursor: pointer;
+  animate: 0.2s;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: #595959;
+  border: 0px solid #000000;
+  border-radius: 100px;
+  box-shadow: 0px 0px 0px #000000;
+}
+input[type=range]::-ms-fill-upper {
+  background: #595959;
+  border: 0px solid #000000;
+  border-radius: 100px;
+  box-shadow: 0px 0px 0px #000000;
+}
+input[type=range]::-ms-thumb {
+  margin-top: 1px;
+  box-shadow: 1px 1px 10px #000000;
+  border: 0px solid #000000;
+  height: 40px;
+  width: 40px;
+  border-radius: 50px;
+  background: #D4D4D4;
+  cursor: pointer;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: #595959;
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: #595959;
+}
 </style>

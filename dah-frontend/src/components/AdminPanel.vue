@@ -2,6 +2,7 @@
   <div id="admin-panel" class="panel">
     <div v-if="!starting">
       <H2>Settings</H2>
+      <button class="invite" v-on:click="invite()">Invite Players</button>
       <p>Name<br><input v-model="tempLobbyDataCopy.name"></p>
       <p>Password<br><input v-model="tempLobbyDataCopy.password"></p>
       
@@ -59,19 +60,37 @@ export default {
       this.starting = true;
       this.datastore.triggerLoadingScreen();
       this.datastore.beginGame();
+    },
+    invite(){
+      var link = this.datastore.host + 'lobbies/'+this.datastore.state.myLobby.id+'/join'
+      prompt("Send them this link:", link);
     }
   }
 }
 </script>
 
 <style lang="scss">
+.invite{
+  background-color: blue;
+  border-color: blue;
+}
+.invite:hover{
+  background-color: lightblue;
+  border-color: lightblue;
+}
 button{
   width: 100%;
 }
 input{
   width: 100%;
 }
-@media only screen and (orientation: portrait) {
+@media only screen and (orientation: portrait) and (max-width: 800px){
+  input{
+    font-size: 1em;
+    width: 100%;
+  }
+}
+@media only screen and (orientation: portrait) and (min-width: 800px){
   input{
     font-size: 1em;
     width: 100%;
