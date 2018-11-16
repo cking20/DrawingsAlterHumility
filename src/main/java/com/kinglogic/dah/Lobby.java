@@ -116,6 +116,7 @@ public class Lobby {
     /**
      * Allow a player to join the Lobby iff the game hasnt started, the lobby is checkedout, the player knows the password,
      * @param playerID
+     * @param playerName
      * @param password
      * @return 
      */

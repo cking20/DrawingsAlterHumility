@@ -1,7 +1,7 @@
 <template>
 	<div class = draw-vue>
 		<div v-if="!this.dataStore.getHaveISubmitted()">
-			<H2>Draw: {{this.dataStore.getLastContentOfMyBooklet()}}</H2>
+			<H2 style="margin-top: 0px;">Draw: {{this.dataStore.getLastContentOfMyBooklet()}}</H2>
 			<div class="drawing-toolbar vertical">
 				<ul>
 					<li><div class="selector">
@@ -421,7 +421,50 @@ select {
 	border-radius: 5px;
 	margin: 8px 0;
 }
-@media only screen and (orientation: portrait) {
+@media only screen and (orientation: portrait) and (max-width: 800px){
+	#tool-icon{
+		width: 1em;
+	}
+	h2{
+		margin-bottom: 0;
+	}
+	button{
+		
+	}
+	.tool{
+		width: 100%;
+		padding: .25em 0em;
+	}
+	#lineWidth{
+		font-size: 1em;
+		vertical-align: top;
+		padding: 1.05em 0em;
+	}
+	.drawing-area{
+		width: 100%;
+		float: none;
+	}
+	.drawing-toolbar{
+		float: none;
+		li{
+			width: 13%;
+		}
+	}
+	.vertical{
+		width: 100%;
+		ul{
+			li{
+				vertical-align: top;
+				display: inline-block;
+			}
+		}
+	}
+	.modal-content{
+		width: 70%;
+    	height: 70%;
+	}
+}
+@media only screen and (orientation: portrait) and (min-width: 800px){
 	#tool-icon{
 		width: 1em;
 	}

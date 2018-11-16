@@ -1,6 +1,6 @@
 <template>
   <div id="player-status-panel" class="panel">
-    <H2>Players' Statuses</H2>
+    <H2>Waiting for other players</H2>
     <ul>
       <li class="row" v-for="player in datastore.state.myLobby.playerData">
         <div :class="{submitted: player.submitted, playing: !player.submitted}">

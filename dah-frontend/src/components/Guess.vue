@@ -1,7 +1,7 @@
 <template>
 	<div class = guess-vue>
 	<div v-if="!this.datastore.getHaveISubmitted()">
-		<H2>Guess what this is</H2>
+		<H2 style="margin-top: 0px;" >Guess what this is</H2>
 		<img id="testImage" ref="testImage" width="100%">
 		<input v-model="guess" placeholder="Your Guess Here">
 		<button @click="submit()" class="submit" :disabled="!isValid">SUBMIT</button>

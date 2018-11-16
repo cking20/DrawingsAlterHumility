@@ -99,7 +99,7 @@ button{
   border: 2px solid lightgrey;
   border-radius: .25em;
   width: 50%;
-  padding: .5em 1.25em;
+  padding: .5em .5em;
   margin: 8px 0;
   color: white;
   background: none;
@@ -119,7 +119,7 @@ input{
   border: 2px solid white;
   border-radius: .25em;
   width: 50%;
-  padding: .5em 1.25em;
+  padding: .5em .5em;
   margin: 8px 0;
   box-sizing: border-box;
 }

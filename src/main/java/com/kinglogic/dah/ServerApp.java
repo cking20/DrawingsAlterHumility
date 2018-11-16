@@ -29,8 +29,8 @@ import static spark.Spark.*;
 public class ServerApp {
     
 //    private static final String host = "http://drawings-alter-humility.herokuapp.com";
-    private static final String host = "http://localhost:8080";
-//    private static final String host = "http://192.168.254.198:8080";
+//    private static final String host = "http://localhost:8080";
+    private static final String host = "http://192.168.254.198:8080";
     
 //    private static final String host = "*";
     private static Gson gson;
@@ -80,7 +80,7 @@ public class ServerApp {
                 response.header("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,");
                 response.header("Access-Control-Allow-Credentials", "true");
                 //set up their session 
-                request.session(true);
+//                request.session(true);
             });
 
             configurePlayerStatusEndpoints();

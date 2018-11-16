@@ -4,9 +4,9 @@
 		<div class="imageContent">
 			<img :src="imgURL" style="width: 100%;">	
 		</div>
-		<p class="attribution">By {{datastore.state.myLobby.playerData[drawing.creator].name}}</p>
+		<p class="attribution">By {{this.drawingAttrib}}</p>
 		<h2 class="guessContent">Guess: {{guess.content}}</h2>
-		<p class="attribution">By {{datastore.state.myLobby.playerData[guess.creator].name}}</p>
+		<p class="attribution">By {{this.guessAttrib}}</p>
 		
 	</div>
 </template>
@@ -81,6 +81,22 @@ export default{
 		     
 	},
 	beforeDestroy: function(){
+	},
+	computed:{
+		drawingAttrib: function(){
+			if(this.datastore.state.myLobby.playerData[this.drawing.creator] != null)
+				return this.datastore.state.myLobby.playerData[this.drawing.creator].name;
+			else
+				return 'Anon';
+
+		},
+		guessAttrib: function(){
+			if(this.datastore.state.myLobby.playerData[this.guess.creator] != null)
+				return this.datastore.state.myLobby.playerData[this.guess.creator].name;
+			else
+				return 'Anon';
+		},
+
 	},
 	methods:{	
 		// vote: function(){

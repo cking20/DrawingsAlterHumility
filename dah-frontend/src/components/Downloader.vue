@@ -190,7 +190,24 @@ export default {
 .save:hover{
   background-color: darkblue;
 }
-@media only screen and (orientation: portrait) {
+@media only screen and (orientation: portrait) and (max-width: 800px) {
+  .tool-icon{
+    width: 1em;
+  }
+  .saveImg{
+    width: 100%;
+  }
+  .save{
+    vertical-align: center;
+    font-size: 2em;
+    padding: .5em .5em;
+  }
+  .share{
+    font-size: 2em;
+  
+  }  
+}
+@media only screen and (orientation: portrait) and (min-width: 800px) {
   .render-container{
     width: 100%;
   }

@@ -1,7 +1,7 @@
 <template>
 	<div class = "choose-vue">
 		<div v-if="!this.datastore.getHaveISubmitted()">
-			<H2>Choose A Starting Phrase</H2>
+			<H2 style="margin-top: 0px;">Choose A Starting Phrase</H2>
 			<div class="card">
 				<ul>
 					<li v-for="prompt in datastore.state.prompts" class="item">
@@ -85,7 +85,13 @@ export default{
 		margin-bottom: 0px;
 		text-align: center;
 	}
-	@media only screen and (orientation: portrait) {
+	@media only screen and (orientation: portrait) and (max-width: 800px){
+		.item p{
+			padding-top: .3em;
+			font-size: 2em;
+		}
+	}
+	@media only screen and (orientation: portrait) and (min-width: 800px){
 		.item p{
 			padding-top: .3em;
 			font-size: 4em;

@@ -35,6 +35,7 @@ export default{
 	},
 	created: function(){
 		this.datastore.getPlayerData();
+		this.datastore.state.reviewingBooklet = 0;
 	    //this.refresher = setInterval(this.refreshState,5000);
 	},
 	beforeDestroy: function(){

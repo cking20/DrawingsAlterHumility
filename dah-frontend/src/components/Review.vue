@@ -86,10 +86,15 @@ export default{
 		color: green;
 		font-size: 3em;
 	}
-	@media only screen and (orientation: portrait) {
+	@media only screen and (orientation: portrait) and (max-width: 800px) {
+		p{
+			font-size: 1em;
+		}
+	}
+	@media only screen and (orientation: portrait) and (min-width: 800px) {
 		p{
 			font-size: 2em;
 		}
-		
+
 	}
 </style>
