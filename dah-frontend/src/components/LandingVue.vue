@@ -1,6 +1,6 @@
 <template>
   <div id="landing">
-    <H1>;Drawings Alter Humility</H1>
+    <H1><b>;Drawings Alter Humility</b></H1>
     <H2>Guess. ;Draw. Laugh.</H2>
   </div>
 </template>
@@ -36,7 +36,7 @@ export default {
 #landing{
   h1{
     margin-top: 25%;
-    font-size: 60px;
+    font-size: 5em;
   }
 }
 @media only screen and (orientation: portrait) and (max-width: 800px){

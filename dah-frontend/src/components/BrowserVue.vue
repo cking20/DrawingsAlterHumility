@@ -38,6 +38,7 @@ export default {
   created: function(){
     this.datastore.triggerLoadingScreen();
     this.refreshState();
+    this.datastore.refreshMyLobbyData();
     this.refresher = setInterval(this.refreshState,5000);
   },
   beforeDestroy: function(){
