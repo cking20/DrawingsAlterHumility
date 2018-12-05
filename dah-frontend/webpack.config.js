@@ -76,7 +76,7 @@ module.exports = {
     extensions: ['*', '.js', '.vue', '.json']
   },
   devServer: {
-	host: '192.168.254.198',
+	
     port: 8080,
     historyApiFallback: true,
     noInfo: true,

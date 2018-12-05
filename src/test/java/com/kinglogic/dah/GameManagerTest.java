@@ -569,7 +569,7 @@ public class GameManagerTest {
         
         InputStream stream = GetTextInputStream();
         String expected = null;
-        String actual = GameManager.getInstance().SubmitDrawing(scaffold_player.session().id(), -1, stream);
+        String actual = GameManager.getInstance().SubmitDrawing(scaffold_player.session().id(), 0, stream);
         assertEquals(expected, actual);  
     }
     

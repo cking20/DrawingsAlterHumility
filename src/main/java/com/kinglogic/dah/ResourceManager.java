@@ -85,6 +85,10 @@ public class ResourceManager {
      * @return fileName
      */
     public String saveImage(int LobbyNum, int BookletNum, int PageNum, InputStream inputStream){
+        if(LobbyNum < 0 || LobbyNum >= GameManager.MAX_LOBBIES)
+            return null;
+        if(BookletNum < 0 || PageNum < 0)
+            return null;
         File dir = new File(tempDir.getPath()+"/"+LobbyNum+"/"+BookletNum);
         dir.mkdirs();
         Path tempFile = new File(dir.getPath()+"/"+PageNum+".png").toPath();//Files.createTempFile(tempDir.toPath(), "temp", ".png");
