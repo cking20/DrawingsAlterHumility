@@ -62,7 +62,11 @@ export default {
       this.datastore.beginGame();
     },
     invite(){
-      var link = this.datastore.host + 'lobbies/'+this.datastore.state.myLobby.id+'/join'
+      var link;
+      if(this.datastore.state.myLobby.password != null)
+        link = this.datastore.host + '/lobbies/'+this.datastore.state.myLobby.id+'/join?password='+this.datastore.state.myLobby.password;
+      else
+        link = this.datastore.host + '/lobbies/'+this.datastore.state.myLobby.id+'/join';
       prompt("Send them this link:", link);
     }
   }

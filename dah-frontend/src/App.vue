@@ -6,9 +6,10 @@
     <div :class="{hidden: datastore.state.mustRefresh, center: true}">
       <component v-bind:is="datastore.state.currentVue"> </component>
     </div>
-    <div v-if="datastore.state.myData.name == null">
-      <Name></Name>
+    <div>
+      <button v-if="datastore.state.currentVue == 'LandingVue'" class="submit" @click="toBrowse()">Play</button>
     </div>
+    
     
     
     <!-- <h1>Test shared image</h1>
@@ -44,7 +45,7 @@
   import BrowserVue from './components/BrowserVue.vue'
   import DrawVue from './components/Draw.vue'
   import LobbyVue from './components/LobbyVue.vue'
-  import Name from './components/Name.vue'
+  
 
 export default {
   name: 'app',
@@ -55,14 +56,13 @@ export default {
     LobbyVue,
     BrowserVue,
     LandingVue,
-    Loader,
-    Name 
+    Loader
   },
   data: function() {
     return {
       sapi : socialConnector.socialConnector,
       datastore: store.store,
-      currentVue: 'BrowserVue',
+      currentVue: 'LandingVue',
       // imgRef: {},
       refresher: ''
     }
@@ -73,7 +73,10 @@ export default {
   created: function(){
     // this.refresher = setInterval(this.refreshState,5000);
   },
-  methods:{    
+  methods:{ 
+    toBrowse: function(){
+      this.datastore.state.currentVue =  'BrowserVue';
+    }   
   }
 }
 </script>
@@ -191,7 +194,7 @@ a {
 
 .center{
   margin: auto;
-  width: 75%;
+  width: 50%;
   padding: 10px;
 }
 

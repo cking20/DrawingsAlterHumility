@@ -197,6 +197,29 @@ public class GameManager {
         return false;
     }
     
+    public boolean Kick(Session playerSession, String playerID){
+        String accesor_id = playerSession.id();
+        if(playerSession.attribute("CURRENT_GAME") == null)
+            return false;
+        int lobby_id = playerSession.attribute("CURRENT_GAME");
+        if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
+            if(accesor_id.compareTo(lobbies[lobby_id].getAdminUuid()) == 0){//if its the admin 
+                if(lobbies[lobby_id].RemovePlayer(playerID)){//player successfully left
+                    return true;
+                } 
+            }
+        }
+        return false;
+    }
+    public boolean isInLobby(int lobby_id, String playerID){
+        if(lobby_id < lobbies.length && lobby_id >= 0){//the lobby is valid
+            if(lobbies[lobby_id].hasPlayer(playerID))
+                return true;
+        }
+        return false;
+    }
+    
+    
     /**
      * Update the session's name in the lobby data
      * @param playerSession 

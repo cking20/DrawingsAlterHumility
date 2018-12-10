@@ -433,4 +433,8 @@ public class Lobby {
     public int getBookletIndex(Booklet b){
         return booklets.indexOf(b);
     }
+    
+    public boolean hasPlayer(String playerID){
+        return players.contains(playerID);
+    }
 }

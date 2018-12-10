@@ -10,8 +10,12 @@
 			<Review v-else></Review>
 		</div>
 		<div v-else>
-			<h1> Preparing Awesomeness...</h1>
+			<!-- <h1> Preparing Awesomeness...</h1> -->
+			<Loader></Loader>
 		</div>
+		<div v-if="datastore.state.myData.name == null">
+	      <Modal style="background-color: lightgrey;"><Name></Name></Modal>
+	    </div>
 
 		
 
@@ -24,6 +28,9 @@ import store from '../store.js'
 import Pregame from './Pregame.vue'
 import Play from './Play.vue'
 import Review from './Review.vue'
+import Loader from './Loader.vue'
+import Name from './Name.vue'
+  import Modal from './Modal.vue'
 export default{
 	name: 'LobbyVue',
 	props:{
@@ -31,7 +38,10 @@ export default{
 	components:{
 		Pregame,
 		Play,
-		Review
+		Review,
+		Loader,
+		Name,
+		Modal
 	},
 	data: function() {
 		return {

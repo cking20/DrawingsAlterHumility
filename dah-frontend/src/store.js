@@ -154,11 +154,14 @@ const store = {
 	Sets the current lobby to null on error
 	*/
 	refreshMyLobbyData: function(){
-		hit('GET', this.host + '/me/lobby', function(xhttp){
+		hitWithFail('GET', this.host + '/me/lobby', function(xhttp){
 			store.state.myLobby = JSON.parse(xhttp.responseText);
 			store.state.mustRefresh = false;
 		}, function(xhttp){
+			console.log(xhttp);
+			console.log("refresh failure");
 			store.state.myLobby = null;
+			console.log("lobby now: "+ store.state.myLobby);
 			//error
 		});
 		vueStateTransition();
@@ -249,7 +252,12 @@ const store = {
 		});
 		vueStateTransition();
 	},
-
+	kickPlayer: function(name){
+		var nameJSON = '{"name": "' + name + '"}';
+		console.log(nameJSON);
+		post(this.host + '/lobbies/'+ store.state.myLobby.id + '/kick', nameJSON, function(xhttp){
+		});
+	},
 	/**
 	@Description: Requests that the current lobby be restarted 
 		from the server using the '/lobbies/{ID}/restart' endpoint
@@ -375,13 +383,13 @@ function vueStateTransition(){
 @param: callbackFunctionSuccess: the function to call on a successful request
 @param: callbackFunctionFailure: the function to call on failure/error 
 */
-function hit(method, path, callbackFunctionSuccess, callbackFunctionFailure){
+function hitWithFail(method, path, callbackFunctionSuccess, callbackFunctionFailure){
 	var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 		    if (this.readyState == 4 && this.status == 200) {
 		    	//could be a callback function passed as a parameter?
 		    	callbackFunctionSuccess(this);
-			}else{
+			}else if(this.readyState == 4){
 				callbackFunctionFailure(this);
 			}
 		};

@@ -30,7 +30,7 @@ public class ServerApp {
     
     private static final String host = "http://drawings-alter-humility.herokuapp.com";
 //    private static final String host = "http://localhost:8080";
-//    private static final String host = "http://192.168.254.198:8080";
+//    private static final String host = "http://192.168.254.190:8080";
     
 //    private static final String host = "*";
     private static Gson gson;
@@ -80,7 +80,12 @@ public class ServerApp {
                 response.header("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,");
                 response.header("Access-Control-Allow-Credentials", "true");
                 //set up their session 
-//                request.session(true);
+                if (request.session(false) == null){
+                    request.session(true);
+                }
+//                if(request.session().attribute("NAME") == null){
+//                    request.session().attribute("NAME", "Anon");
+//                }
             });
 
             configurePlayerStatusEndpoints();
@@ -140,7 +145,8 @@ public class ServerApp {
                 * Returns all data about a specific lobby
                 */
                 get("", (request,response) ->{
-                    String data = GameManager.getInstance().getLobby(Integer.parseInt(request.params(":lobby_id")));
+                    int lobbyNum = Integer.parseInt(request.params(":lobby_id"));
+                    String data = GameManager.getInstance().getLobby(lobbyNum);
                     System.err.println(data);
                     if(data == null)
                         halt(400);
@@ -188,11 +194,16 @@ public class ServerApp {
                  * Join this lobby
                  */
                 before("/join", (request, response) -> {
+                    //check the user agent to insure its not a crawler
+                    if(isCrawler(request.userAgent())){
+                        halt(403, "youre a web crawler arent you");
+                    }
                     if(request.session().attribute("CURRENT_GAME") != null)
                         halt(403, "you already have a game in your session");
 //                    System.out.println(request.body());
 //                    System.out.println(request.body());
                 });
+               
                 post("/join", (request,response) ->{
                     if(request.body() != null){
                         try{
@@ -225,7 +236,7 @@ public class ServerApp {
                         if( GameManager.getInstance().JoinLobby(
                             request.session(), 
                             Integer.parseInt(request.params(":lobby_id")),
-                            ""
+                            request.queryParams("password")
                         )){
                             //return GameManager.getInstance().getLobby(Integer.parseInt(request.params(":lobby_id")));
                             
@@ -265,6 +276,26 @@ public class ServerApp {
                     return "{\"message\": \"nope, stars. can't leave\"}";
                 });
                 
+                post("/kick", (request,response) ->{
+                    if(request.body() != null){
+                        try{
+                            HashMap<String,Object> map = new HashMap();
+                            map = (HashMap<String,Object>) gson.fromJson(request.body(), map.getClass());
+                            if(map != null && map.containsKey("name")){
+                                String name = (String) map.get("name");
+                                System.out.println("kicking "+name);
+                                GameManager.getInstance().Kick(request.session(), name);
+                            }
+                        }catch(JsonSyntaxException js){
+                            halt(400, js.getMessage());
+
+                        }
+                    }
+                            
+                    
+                    return "{\"message\": \"nope, stars. can't leave\"}";
+                });
+                
                 /**
                 * Restart the lobby
                 */
@@ -282,6 +313,27 @@ public class ServerApp {
             
                     
         });
+    }
+    
+    private static boolean isCrawler(String agent){
+        System.err.println(agent);
+        boolean flag = false;
+        //if it doesnt contain these, its likely a robot
+        if(!agent.contains("Mozilla") && 
+                            !agent.contains("Chrome") && 
+                            !agent.contains("Safari") &&
+                            !agent.contains("AppleWebKit") &&
+                            !agent.contains("OPR"))
+            flag = true;
+        
+        //if it contains "bot" its likely a robot
+        if(agent.contains("bot"))
+            flag = true;
+        
+        //if it 
+        
+        
+        return flag;
     }
     
     /**
@@ -559,6 +611,12 @@ public class ServerApp {
              * Retrun the data of the game the session is currently in
              */
             get("/lobby", (request,response) ->{
+                if(!GameManager.getInstance().isInLobby(request.session().attribute("CURRENT_GAME"), request.session().id())){
+                    request.session().removeAttribute("CURRENT_GAME");
+                    System.out.print("notified of kick");
+                    halt(400);
+                }
+                
                 String data = GameManager.getInstance().getLobby(request.session().attribute("CURRENT_GAME"));
                 if(data == null)
                     halt(400);
